@@ -1,0 +1,20 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Secret configuration
+.env
+.env.*
+!.env.example
+
+# Testing and caches
+.pytest_cache/
+.coverage
+
+# Operating system files
+.DS_Store
+Thumbs.db
