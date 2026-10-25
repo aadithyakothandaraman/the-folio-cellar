@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,25 @@
 </head>
 <body>
 <header class="site-header">
-    <a href="{{ url_for('home') }}" class="brand">The Folio Cellar</a>
+    <a href="{{ url_for('home') }}" class="brand">
+        <span class="brand-icon" aria-hidden="true">
+            <svg
+                viewBox="0 0 24 24"
+                width="23"
+                height="23"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M12 7.5C9.5 5.8 6.4 5.4 3 6.5v12c3.4-1.1 6.5-.7 9 1z" />
+                <path d="M12 7.5c2.5-1.7 5.6-2.1 9-1v12c-3.4-1.1-6.5-.7-9 1" />
+                <path d="M12 7.5v12" />
+            </svg>
+        </span>
+        The Folio Cellar
+    </a>
 </header>
 
 <main class="journal-page">
@@ -33,7 +52,7 @@
             <h1>My Reading Journal</h1>
             <p>Save quotes, reflections, and lessons from your reading.</p>
         </div>
-        <a class="button-primary" href="{{ url_for('add_journal_entry') }}">＋ New Entry</a>
+        <a class="button-primary" href="{{ url_for('add_journal_entry') }}">+ New Entry</a>
     </div>
 
     {% if error %}
@@ -46,8 +65,8 @@
             <article class="journal-entry">
                 <p class="journal-meta">
                     {{ entry.entry_type }}
-                    {% if entry.book_title %} · {{ entry.book_title }}{% endif %}
-                    · {{ entry.created_at.strftime('%d %b %Y') }}
+                    {% if entry.book_title %} - {{ entry.book_title }}{% endif %}
+                    - {{ entry.created_at.strftime('%d %b %Y') }}
                 </p>
 
                 <h2>{{ entry.title }}</h2>
@@ -84,7 +103,7 @@
         </div>
     {% endif %}
 
-    <p><a class="journal-link" href="{{ url_for('home') }}">← Back to Home</a></p>
+    <p><a class="journal-link" href="{{ url_for('home') }}">- Back to Home</a></p>
 </main>
 
 <footer class="site-footer"><p>Made for the love of books.</p></footer>

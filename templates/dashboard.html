@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,25 @@
 </head>
 <body>
 <header class="site-header">
-    <a href="{{ url_for('home') }}" class="brand">The Folio Cellar</a>
+    <a href="{{ url_for('home') }}" class="brand">
+        <span class="brand-icon" aria-hidden="true">
+            <svg
+                viewBox="0 0 24 24"
+                width="23"
+                height="23"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M12 7.5C9.5 5.8 6.4 5.4 3 6.5v12c3.4-1.1 6.5-.7 9 1z" />
+                <path d="M12 7.5c2.5-1.7 5.6-2.1 9-1v12c-3.4-1.1-6.5-.7-9 1" />
+                <path d="M12 7.5v12" />
+            </svg>
+        </span>
+        The Folio Cellar
+    </a>
 </header>
 
 <main class="dashboard-page">
@@ -86,7 +105,7 @@
             <article class="dashboard-stat"><span>Favourites</span><strong>{{ stats.favorites }}</strong></article>
             <article class="dashboard-stat"><span>Genres represented</span><strong>{{ stats.genres }}</strong></article>
             <article class="dashboard-stat"><span>Books personally rated</span><strong>{{ stats.rated_books }}</strong></article>
-            <article class="dashboard-stat"><span>Average personal rating</span><strong>{% if stats.average_rating is not none %}{{ stats.average_rating }} / 5{% else %}—{% endif %}</strong></article>
+            <article class="dashboard-stat"><span>Average personal rating</span><strong>{% if stats.average_rating is not none %}{{ stats.average_rating }} / 5{% else %}-{% endif %}</strong></article>
         </section>
 
         <section class="dashboard-panel">
@@ -122,8 +141,8 @@
     {% endif %}
 
     <nav class="dashboard-actions" aria-label="Dashboard navigation">
-        <a class="dashboard-link" href="{{ url_for('library') }}">← My Books</a>
-        <a class="dashboard-link" href="{{ url_for('reading_journal') }}">Open Reading Journal →</a>
+        <a class="dashboard-link" href="{{ url_for('library') }}">- My Books</a>
+        <a class="dashboard-link" href="{{ url_for('reading_journal') }}">Open Reading Journal -&gt;</a>
     </nav>
 </main>
 
