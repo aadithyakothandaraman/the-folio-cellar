@@ -1,4 +1,4 @@
-# The Folio Cellar
+﻿# The Folio Cellar
 
 A personal library management web application built with **Python, Flask, and MySQL**, designed to help readers organise their physical book collections, track their reading journeys, and maintain a personal record of the books they own.
 
@@ -88,11 +88,11 @@ The Folio Cellar brings book cataloguing, reading progress, personal ratings, wi
 
 The current database contains five tables:
 
-- **`books`** — book metadata, cover paths, prices, reading status, reading progress, favourites, and personal ratings.
-- **`wishlist`** — books the reader intends to acquire.
-- **`reading_journal`** — reflections, memorable quotes, and lessons learned, with an optional reference to a book.
-- **`users`** — username records.
-- **`user_library`** — a library-association table containing ownership, copies, reading status, ratings, and notes.
+- **`books`** â€” book metadata, cover paths, prices, reading status, reading progress, favourites, and personal ratings.
+- **`wishlist`** â€” books the reader intends to acquire.
+- **`reading_journal`** â€” reflections, memorable quotes, and lessons learned, with an optional reference to a book.
+- **`users`** â€” username records.
+- **`user_library`** â€” a library-association table containing ownership, copies, reading status, ratings, and notes.
 
 The current application routes primarily use the `books`, `wishlist`, and `reading_journal` tables. The presence of `users` and `user_library` in the schema does not, by itself, mean that login or multi-user functionality is implemented.
 
@@ -109,11 +109,11 @@ Install the following before running the application:
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
-cd PersonalLibraryManager
+git clone https://github.com/aadithyakothandaraman/the-folio-cellar.git
+cd the-folio-cellar
 ```
 
-Replace `<your-repository-url>` with your actual repository URL.
+Clone the repository using the command above.
 
 ### 2. Create and Activate a Virtual Environment
 
@@ -171,24 +171,24 @@ The main components of the application are organised as follows:
 
 ```text
 PersonalLibraryManager/
-├── app.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── README.md
-├── templates/
-│   ├── home.html
-│   ├── index.html
-│   ├── add_book.html
-│   ├── edit_book.html
-│   ├── dashboard.html
-│   ├── wishlist.html
-│   └── [reading journal templates]
-└── static/
-    ├── css/
-    │   └── style.css
-    └── uploads/
-        └── .gitkeep
+â”œâ”€â”€ app.py
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ .env.example
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ README.md
+â”œâ”€â”€ templates/
+â”‚   â”œâ”€â”€ home.html
+â”‚   â”œâ”€â”€ index.html
+â”‚   â”œâ”€â”€ add_book.html
+â”‚   â”œâ”€â”€ edit_book.html
+â”‚   â”œâ”€â”€ dashboard.html
+â”‚   â”œâ”€â”€ wishlist.html
+â”‚   â””â”€â”€ [reading journal templates]
+â””â”€â”€ static/
+    â”œâ”€â”€ css/
+    â”‚   â””â”€â”€ style.css
+    â””â”€â”€ uploads/
+        â””â”€â”€ .gitkeep
 ```
 
 The tree above illustrates the main structure; confirm the exact filenames and any additional assets in the repository before publishing the documentation.
@@ -242,3 +242,6 @@ Potential areas for future development include:
 The current version includes book collection management, reading progress tracking, personal ratings and favourites, a wishlist, a reading dashboard, a reading journal, and display-only currency conversion.
 
 Further testing, documentation, and deployment preparation can be completed as the project evolves.
+
+
+
