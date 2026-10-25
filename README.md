@@ -88,11 +88,11 @@ The Folio Cellar brings book cataloguing, reading progress, personal ratings, wi
 
 The current database contains five tables:
 
-- **`books`** â€” book metadata, cover paths, prices, reading status, reading progress, favourites, and personal ratings.
-- **`wishlist`** â€” books the reader intends to acquire.
-- **`reading_journal`** â€” reflections, memorable quotes, and lessons learned, with an optional reference to a book.
-- **`users`** â€” username records.
-- **`user_library`** â€” a library-association table containing ownership, copies, reading status, ratings, and notes.
+- **`books`** - book metadata, cover paths, prices, reading status, reading progress, favourites, and personal ratings.
+- **`wishlist`** - books the reader intends to acquire.
+- **`reading_journal`** - reflections, memorable quotes, and lessons learned, with an optional reference to a book.
+- **`users`** - username records.
+- **`user_library`** - a library-association table containing ownership, copies, reading status, ratings, and notes.
 
 The current application routes primarily use the `books`, `wishlist`, and `reading_journal` tables. The presence of `users` and `user_library` in the schema does not, by itself, mean that login or multi-user functionality is implemented.
 
@@ -171,24 +171,29 @@ The main components of the application are organised as follows:
 
 ```text
 PersonalLibraryManager/
-â”œâ”€â”€ app.py
-â”œâ”€â”€ requirements.txt
-â”œâ”€â”€ .env.example
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ README.md
-â”œâ”€â”€ templates/
-â”‚   â”œâ”€â”€ home.html
-â”‚   â”œâ”€â”€ index.html
-â”‚   â”œâ”€â”€ add_book.html
-â”‚   â”œâ”€â”€ edit_book.html
-â”‚   â”œâ”€â”€ dashboard.html
-â”‚   â”œâ”€â”€ wishlist.html
-â”‚   â””â”€â”€ [reading journal templates]
-â””â”€â”€ static/
-    â”œâ”€â”€ css/
-    â”‚   â””â”€â”€ style.css
-    â””â”€â”€ uploads/
-        â””â”€â”€ .gitkeep
+|-- app.py
+|-- requirements.txt
+|-- .env.example
+|-- .gitignore
+|-- README.md
+|-- database/
+|   `-- schema.sql
+|-- templates/
+|   |-- home.html
+|   |-- index.html
+|   |-- add_book.html
+|   |-- edit_book.html
+|   |-- dashboard.html
+|   |-- wishlist.html
+|   |-- journal.html
+|   `-- journal_form.html
+`-- static/
+    |-- css/
+    |   `-- style.css
+    |-- images/
+    |   `-- crumpled-parchment.jpg
+    `-- uploads/
+        `-- .gitkeep
 ```
 
 The tree above illustrates the main structure; confirm the exact filenames and any additional assets in the repository before publishing the documentation.
