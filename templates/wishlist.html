@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist | The Folio Cellar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+        .wishlist-container {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 48px 0 72px;
+        }
+
+        .wishlist-heading {
+            margin-bottom: 30px;
+        }
+
+        .wishlist-eyebrow {
+           color: #4f7c57 !important;
+        }
+
+        .wishlist-heading h1 {
+            margin: 0 0 10px;
+            color: var(--walnut);
+            font-family: var(--serif);
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+
+        .wishlist-heading p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .wishlist-form,
+        .wishlist-item {
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+
+        .wishlist-form {
+            margin-top: 32px;
+        }
+
+        .wishlist-form h2,
+        .wishlist-item h3 {
+            margin-top: 0;
+            color: var(--walnut);
+            font-family: var(--serif);
+        }
+
+        .wishlist-fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .wishlist-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .wishlist-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .wishlist-field label {
+            color: var(--walnut);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .wishlist-field input,
+        .wishlist-field textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--walnut);
+            font: inherit;
+        }
+
+        .wishlist-field textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .wishlist-form .button-primary {
+            margin-top: 18px;
+        }
+
+        .wishlist-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .wishlist-item {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .wishlist-item h3 {
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .wishlist-author,
+        .wishlist-meta,
+        .wishlist-notes {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .wishlist-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .wishlist-actions form {
+            margin: 0;
+        }
+
+        .wishlist-actions button {
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .wishlist-empty {
+            padding: 42px 24px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .wishlist-empty h2 {
+            color: var(--walnut);
+            font-family: var(--serif);
+        }
+
+        .wishlist-empty p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 650px) {
+            .wishlist-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .wishlist-field.full-width {
+                grid-column: auto;
+            }
+
+            .wishlist-item {
+                flex-direction: column;
+            }
+
+            .wishlist-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="{{ url_for('home') }}" class="brand">
+            The Folio Cellar
+        </a>
+
+        <a href="{{ url_for('library') }}" class="button-secondary">
+            My Books
+        </a>
+    </header>
+
+    <main class="wishlist-container">
+        <section class="wishlist-heading">
+            <p class="eyebrow wishlist-eyebrow">YOUR FUTURE READS</p>
+            <h1>Wishlisted Books</h1>
+            <p>
+                Keep track of books you want to buy and add them to your
+                collection when you get them.
+            </p>
+        </section>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages" role="status" aria-live="polite">
+                    {% for message in messages %}
+                        <p class="flash-message">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="wishlist-books-section">
+            <h2>Wishlisted Books</h2>
+
+            {% if error %}
+                <div class="wishlist-empty">
+                    <h2>We couldn't load your Wishlist.</h2>
+                    <p>Check your database connection and try again.</p>
+                </div>
+
+            {% elif items %}
+                <div class="wishlist-list">
+                    {% for item in items %}
+                        <article class="wishlist-item">
+                            <div>
+                                <h3>{{ item.title }}</h3>
+                                <p class="wishlist-author">
+                                    by {{ item.authors }}
+                                </p>
+
+                                {% if item.isbn %}
+                                    <p class="wishlist-meta">
+                                        ISBN: {{ item.isbn }}
+                                    </p>
+                                {% endif %}
+
+                                {% if item.notes %}
+                                    <p class="wishlist-notes">
+                                        {{ item.notes }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="wishlist-actions">
+                                <form
+                                    action="{{ url_for('move_wishlist_to_library', wishlist_id=item.wishlist_id) }}"
+                                    method="POST"
+                                >
+                                    <button type="submit" class="button-primary">
+                                        Move to My Books
+                                    </button>
+                                </form>
+
+                                <form
+                                    action="{{ url_for('remove_from_wishlist', wishlist_id=item.wishlist_id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Remove this book from your Wishlist?');"
+                                >
+                                    <button type="submit" class="button-secondary">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <div class="wishlist-empty">
+                    <h2>Your Wishlist is empty.</h2>
+                    <p>Add books using the form below, and they'll appear here.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="wishlist-form">
+            <h2>Add Book to be Wishlisted</h2>
+
+            <form action="{{ url_for('add_to_wishlist') }}" method="POST">
+                <div class="wishlist-fields">
+                    <div class="wishlist-field">
+                        <label for="wishlist-title">Book title *</label>
+                        <input
+                            id="wishlist-title"
+                            name="title"
+                            type="text"
+                            maxlength="255"
+                            required
+                        >
+                    </div>
+
+                    <div class="wishlist-field">
+                        <label for="wishlist-authors">Author *</label>
+                        <input
+                            id="wishlist-authors"
+                            name="authors"
+                            type="text"
+                            maxlength="255"
+                            required
+                        >
+                    </div>
+
+                    <div class="wishlist-field">
+                        <label for="wishlist-isbn">ISBN (optional)</label>
+                        <input
+                            id="wishlist-isbn"
+                            name="isbn"
+                            type="text"
+                            maxlength="40"
+                        >
+                    </div>
+
+                    <div class="wishlist-field full-width">
+                        <label for="wishlist-notes">Notes (optional)</label>
+                        <textarea
+                            id="wishlist-notes"
+                            name="notes"
+                            placeholder="Edition, reason for buying, or other notes"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="button-primary">
+                    Add to Wishlist
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Made for the love of books.</p>
+    </footer>
+</body>
+</html>

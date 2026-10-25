@@ -3,14 +3,1789 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Library Manager</title>
+
+    <title>The Folio Cellar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
+
 <body>
-    <h1>Personal Library Manager</h1>
 
-    <p>Your personal book collection, all in one place.</p>
+    <header class="site-header">
+        <a href="{{ url_for('home') }}" class="brand">
+            <span class="brand-icon" aria-hidden="true">
+                <svg
+                    viewBox="0 0 24 24"
+                    width="23"
+                    height="23"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M12 7.5C9.5 5.8 6.4 5.4 3 6.5v12c3.4-1.1 6.5-.7 9 1z" />
+                    <path d="M12 7.5c2.5-1.7 5.6-2.1 9-1v12c-3.4-1.1-6.5-.7-9 1" />
+                    <path d="M12 7.5v12" />
+                </svg>
+            </span>
 
-    <p>We're building a better way to organise, discover,
-       and keep track of the books you own.</p>
+            The Folio Cellar
+        </a>
+
+        <a href="{{ url_for('add_book') }}" class="button-primary">
+            <span class="button-plus" aria-hidden="true">+</span>
+            Add a Book
+        </a>
+    </header>
+
+
+    <main class="page-container">
+
+        <section class="hero">
+            <p class="eyebrow">YOUR PERSONAL COLLECTION</p>
+
+            <h1>A home for every book.</h1>
+
+            <p class="hero-description">
+                Keep track of the books you own, discover what's on your shelves,
+                and find the details you need whenever you need them.
+            </p>
+        </section>
+
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages" role="status" aria-live="polite">
+                    {% for message in messages %}
+                        <p class="flash-message">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+
+        <!-- Feedback for AJAX favorite updates -->
+        <div
+            class="flash-messages"
+            id="ajax-feedback"
+            role="status"
+            aria-live="polite"
+            hidden
+        >
+            <p class="flash-message" id="ajax-feedback-message"></p>
+        </div>
+
+
+        <section class="library-section">
+
+            <div class="library-toolbar">
+
+                <div class="library-heading">
+                    <h2>My Books</h2>
+
+                    <p
+                        class="book-count"
+                        id="book-count"
+                        data-total="{{ books|length }}"
+                    >
+                        {{ books|length }}
+                        {% if books|length == 1 %}book{% else %}books{% endif %}
+                        in your collection
+                    </p>
+                </div>
+
+
+                <!-- Filter -->
+                <div class="filter-wrapper">
+
+                    <label for="book-filter">Filter by</label>
+
+                    <select id="book-filter" aria-label="Filter books">
+                        <option value="all">All Books</option>
+                        <option value="favorites">Favorites</option>
+                        <option value="want-to-read">Want to Read</option>
+                        <option value="currently-reading">Currently Reading</option>
+                        <option value="on-hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                    </select>
+
+                </div>
+
+
+                <!-- Sorting -->
+
+                <div class="sort-wrapper">
+                    <label for="book-sort">Sort by</label>
+                    <select id="book-sort" aria-label="Sort books">
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title</option>
+                        <option value="date_added" {% if sort_by in ['date_added', 'recent'] %}selected{% endif %}>Date Added</option>
+                        <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Author</option>
+                        <option value="genre" {% if sort_by == 'genre' %}selected{% endif %}>Genre</option>
+                        <option value="publisher" {% if sort_by == 'publisher' %}selected{% endif %}>Publisher</option>
+                    </select>
+
+                    <label for="sort-order">Order</label>
+                    <select id="sort-order" aria-label="Sort order">
+                        <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+                        <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+                    </select>
+                </div>
+
+
+
+                <!-- Search -->
+                <div class="search-wrapper">
+
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+
+                    <label
+                        for="book-search"
+                        style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+                    >
+                        Search your library
+                    </label>
+
+                    <input
+                        type="search"
+                        id="book-search"
+                        placeholder="Search your library..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+
+            {% if error %}
+
+                <div class="empty-state">
+                    <h2>We couldn't load your library.</h2>
+                    <p>Please check your database connection and try again.</p>
+                </div>
+
+            {% elif books %}
+
+                <div class="book-grid" id="book-grid">
+
+                    {% for book in books %}
+
+                        {% set current_pages = book.current_page or 0 %}
+                        {% set current_status = book.reading_status or 'Want to Read' %}
+
+                        {% if book.total_pages and book.total_pages > 0 %}
+                            {% set progress_percent = (current_pages * 100 / book.total_pages)|round(0, 'floor') %}
+                            {% set displayed_percent = [[progress_percent, 0]|max, 100]|min %}
+                        {% endif %}
+
+
+                        <article
+                            class="book-card"
+                            data-book-id="{{ book.book_id }}"
+                            data-search="{{ ((book.title or '') ~ ' ' ~ (book.authors or '') ~ ' ' ~ (book.isbn or '') ~ ' ' ~ (book.genre or '') ~ ' ' ~ (book.publisher or ''))|lower }}"
+                            data-title="{{ (book.title or '')|lower }}"
+                            data-author="{{ (book.authors or '')|lower }}"
+                            data-genre="{{ (book.genre or '')|lower }}"
+                            data-publisher="{{ (book.publisher or '')|lower }}"
+                            data-favorite="{{ 'true' if book.is_favorite else 'false' }}"
+                            data-reading-status="{{ current_status|lower|replace(' ', '-') }}"
+                            data-created-at="{{ book.created_at.isoformat() if book.created_at else '' }}"
+                        >
+
+                            <div class="book-cover">
+
+                                {% if book.cover_image_path %}
+
+                                    <img
+                                        src="{{ url_for('static', filename=book.cover_image_path) }}"
+                                        alt="Cover of {{ book.title }}"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="cover-placeholder">
+                                        <span class="placeholder-icon" aria-hidden="true">▤</span>
+                                        <span>{{ book.title }}</span>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="book-details">
+
+                                <div class="book-card-summary">
+
+                                    <!-- Title and favorite heart -->
+                                    <div class="book-title-row">
+
+                                        <h3 class="book-title">
+                                            {{ book.title }}
+
+                                            {% if book.is_new %}
+                                                <span
+                                                    class="new-book-badge"
+                                                    aria-label="Recently added"
+                                                >NEW</span>
+                                            {% endif %}
+                                        </h3>
+
+
+                                        <form
+                                            class="favorite-form"
+                                            action="{{ url_for('toggle_favorite', book_id=book.book_id) }}"
+                                            method="POST"
+                                            data-book-title="{{ book.title }}"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="sort_by"
+                                                value="{{ sort_by }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="favorite-toggle {% if book.is_favorite %}is-favorite{% endif %}"
+                                                aria-pressed="{{ 'true' if book.is_favorite else 'false' }}"
+                                                aria-label="{% if book.is_favorite %}Remove {{ book.title }} from Favorites{% else %}Add {{ book.title }} to Favorites{% endif %}"
+                                                title="{% if book.is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}"
+                                            >
+                                                <span aria-hidden="true">{% if book.is_favorite %}♥{% else %}♡{% endif %}</span>
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+
+                                    <p class="book-author">
+                                         {{ book.authors }}
+                                    </p>
+
+                                    {% if book.genre %}
+                                        <p class="book-genre">
+                                            {{ book.genre }}
+                                        </p>
+                                    {% endif %}
+
+
+                                    <!-- Visible reading progress -->
+                                    <div class="summary-reading-progress">
+
+                                        <div class="summary-reading-progress-top">
+
+                                            <span class="summary-reading-status">
+                                                {{ current_status }}
+                                            </span>
+
+                                            {% if book.total_pages and book.total_pages > 0 %}
+                                                <span class="summary-reading-percentage">
+                                                    {{ displayed_percent|int }}%
+                                                </span>
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if book.total_pages and book.total_pages > 0 %}
+
+                                            <div
+                                                class="summary-reading-track"
+                                                role="progressbar"
+                                                aria-label="Reading progress for {{ book.title }}"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100"
+                                                aria-valuenow="{{ displayed_percent|int }}"
+                                            >
+                                                <span
+                                                    class="summary-reading-fill"
+                                                    style="width: {{ displayed_percent }}%;"
+                                                ></span>
+                                            </div>
+
+                                            <p class="summary-reading-pages">
+                                                {{ current_pages }} of {{ book.total_pages }} pages
+                                            </p>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="book-details-toggle"
+                                        aria-expanded="false"
+                                        aria-controls="book-details-{{ book.book_id }}"
+                                    >
+                                        <span class="details-toggle-label">
+                                            View details
+                                        </span>
+
+                                        <span
+                                            class="details-toggle-icon"
+                                            aria-hidden="true"
+                                        >⌄</span>
+                                    </button>
+
+                                </div>
+
+
+                                <!-- Expanded details -->
+                                <div
+                                    class="book-card-extra"
+                                    id="book-details-{{ book.book_id }}"
+                                    hidden
+                                >
+
+
+                                    <!-- Bibliographic details -->
+                                    <div class="book-metadata">
+
+                                        {% if book.publisher %}
+                                            <div class="metadata-row">
+                                                <span class="metadata-label">Publisher</span>
+                                                <span class="metadata-value">{{ book.publisher }}</span>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if book.publication_year %}
+                                            <div class="metadata-row">
+                                                <span class="metadata-label">Year</span>
+                                                <span class="metadata-value">{{ book.publication_year }}</span>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if book.language %}
+                                            <div class="metadata-row">
+                                                <span class="metadata-label">Language</span>
+                                                <span class="metadata-value">{{ book.language }}</span>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if book.isbn %}
+                                            <div class="metadata-row">
+                                                <span class="metadata-label">ISBN</span>
+                                                <span class="metadata-value">{{ book.isbn }}</span>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <!-- Description -->
+                                    {% if book.description %}
+
+                                        <div class="description-section">
+
+                                            <p class="book-description is-collapsed">
+                                                {{ book.description }}
+                                            </p>
+
+                                            <button
+                                                type="button"
+                                                class="description-toggle"
+                                                aria-expanded="false"
+                                                hidden
+                                            >Read more</button>
+
+                                        </div>
+
+                                    {% endif %}
+
+                                    <!-- Printed price and currency conversion -->
+                                    {% if book.mrp is not none %}
+
+                                        {% set original_currency = (book.currency or 'INR')|upper %}
+
+                                        <div
+                                            class="book-price"
+                                            data-original-amount="{{ book.mrp }}"
+                                            data-original-currency="{{ original_currency }}"
+                                        >
+
+                                            <span class="metadata-label price-label">
+                                                Printed price
+                                            </span>
+
+                                            <strong>
+                                                <span class="price-value">
+                                                    {{ currency_symbols.get(original_currency, original_currency) }}{{ "%.2f"|format(book.mrp) }}
+                                                </span>
+
+                                                <span class="original-price" hidden>
+                                                    Original:
+                                                    {{ currency_symbols.get(original_currency, original_currency) }}{{ "%.2f"|format(book.mrp) }}
+                                                </span>
+                                            </strong>
+
+
+                                            <div class="book-currency-control">
+
+                                                <label for="book-currency-{{ book.book_id }}">
+                                                    Display currency
+                                                </label>
+
+                                                <select
+                                                    id="book-currency-{{ book.book_id }}"
+                                                    class="book-currency-select"
+                                                    aria-label="Display currency for {{ book.title }}"
+                                                >
+                                                    {% for currency in allowed_currencies %}
+                                                        <option
+                                                            value="{{ currency }}"
+                                                            {% if currency == original_currency %}selected{% endif %}
+                                                        >
+                                                            {{ currency_symbols[currency] }} {{ currency }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+
+                                                <p
+                                                    class="price-conversion-note"
+                                                    role="status"
+                                                    aria-live="polite"
+                                                ></p>
+
+                                            </div>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                                                        <!-- Ratings row -->
+                                    <div class="ratings-row">
+
+                                        <!-- Goodreads rating -->
+                                        {% if book.goodreads_rating is not none %}
+                                            <div class="book-rating">
+                                                <span class="rating-star" aria-hidden="true">★</span>
+                                                <span>
+                                                    {{ "%.1f"|format(book.goodreads_rating) }}/5
+                                                </span>
+                                                <span class="rating-source">
+                                                    Goodreads
+                                                </span>
+                                            </div>
+                                        {% endif %}
+
+                                        <!-- Personal rating -->
+                                        <div class="personal-rating-section">
+
+                                            <p class="personal-rating-label">
+                                                Your rating
+                                            </p>
+
+                                            <form
+                                                class="personal-rating-form"
+                                                action="{{ url_for('update_personal_rating', book_id=book.book_id) }}"
+                                                method="POST"
+                                            >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="sort_by"
+                                                    value="{{ sort_by }}"
+                                                >
+
+                                                <div
+                                                    class="personal-rating-stars"
+                                                    role="group"
+                                                    aria-label="Rate {{ book.title }} from 1 to 5 stars"
+                                                >
+
+                                                    {% for rating in range(1, 6) %}
+                                                        <button
+                                                            type="submit"
+                                                            name="personal_rating"
+                                                            value="{{ rating }}"
+                                                            class="personal-rating-star {% if book.personal_rating is not none and rating <= book.personal_rating %}is-selected{% endif %}"
+                                                            aria-label="{{ rating }} out of 5 stars"
+                                                            aria-pressed="{{ 'true' if book.personal_rating is not none and rating <= book.personal_rating else 'false' }}"
+                                                            title="Rate {{ rating }} out of 5"
+                                                        >★</button>
+                                                    {% endfor %}
+
+                                                </div>
+
+                                                <div class="personal-rating-footer">
+
+                                                    {% if book.personal_rating is not none %}
+                                                        <span class="personal-rating-value">
+                                                            {{ book.personal_rating }}/5
+                                                        </span>
+
+                                                        <button
+                                                            type="submit"
+                                                            name="personal_rating"
+                                                            value=""
+                                                            class="clear-personal-rating"
+                                                        >
+                                                            Clear rating
+                                                        </button>
+                                                    {% else %}
+                                                        <span class="personal-rating-empty">
+                                                            Not rated yet
+                                                        </span>
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- Reading progress editor -->
+                                                                        <!-- Collapsible Reading Progress Editor -->
+                                    <section class="reading-progress-section">
+
+                                        <button
+                                            type="button"
+                                            class="reading-progress-heading"
+                                            aria-expanded="false"
+                                            aria-controls="reading-progress-panel-{{ book.book_id }}"
+                                        >
+                                            <span>Update Reading Progress</span>
+                                            <span
+                                                class="reading-progress-toggle-icon"
+                                                aria-hidden="true"
+                                            >⌄</span>
+                                        </button>
+
+                                        <div
+                                            class="reading-progress-panel"
+                                            id="reading-progress-panel-{{ book.book_id }}"
+                                            hidden
+                                        >
+
+                                            <form
+                                                class="reading-progress-form"
+                                                action="{{ url_for('update_reading_progress', book_id=book.book_id) }}"
+                                                method="POST"
+                                            >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="sort_by"
+                                                    value="{{ sort_by }}"
+                                                >
+
+                                                <div class="reading-progress-field reading-progress-status-field">
+
+                                                    <label for="reading-status-{{ book.book_id }}">
+                                                        Reading status
+                                                    </label>
+
+                                                    <select
+                                                        id="reading-status-{{ book.book_id }}"
+                                                        name="reading_status"
+                                                        required
+                                                    >
+
+                                                        {% set reading_status_options = [
+                                                            'Want to Read',
+                                                            'Currently Reading',
+                                                            'On Hold',
+                                                            'Completed'
+                                                        ] %}
+
+                                                        {% for status in reading_status_options %}
+                                                            <option
+                                                                value="{{ status }}"
+                                                                {% if current_status == status %}selected{% endif %}
+                                                            >
+                                                                {{ status }}
+                                                            </option>
+                                                        {% endfor %}
+
+                                                    </select>
+
+                                                </div>
+
+                                                <div class="reading-progress-fields-grid">
+
+                                                    <div class="reading-progress-field">
+                                                        <label for="current-page-{{ book.book_id }}">
+                                                            Current page
+                                                        </label>
+
+                                                        <input
+                                                            type="number"
+                                                            id="current-page-{{ book.book_id }}"
+                                                            name="current_page"
+                                                            min="0"
+                                                            step="1"
+                                                            required
+                                                            value="{{ current_pages }}"
+                                                        >
+                                                    </div>
+
+                                                    <div class="reading-progress-field">
+                                                        <label for="total-pages-{{ book.book_id }}">
+                                                            Total pages
+                                                        </label>
+
+                                                        <input
+                                                            type="number"
+                                                            id="total-pages-{{ book.book_id }}"
+                                                            name="total_pages"
+                                                            min="1"
+                                                            step="1"
+                                                            value="{{ book.total_pages if book.total_pages is not none else '' }}"
+                                                            placeholder="Unknown"
+                                                        >
+                                                    </div>
+
+                                                    <div class="reading-progress-field">
+                                                        <label for="started-at-{{ book.book_id }}">
+                                                            Start date
+                                                        </label>
+
+                                                        <input
+                                                            type="date"
+                                                            id="started-at-{{ book.book_id }}"
+                                                            name="started_at"
+                                                            value="{{ book.started_at.strftime('%Y-%m-%d') if book.started_at else '' }}"
+                                                        >
+                                                    </div>
+
+                                                    <div class="reading-progress-field">
+                                                        <label for="completed-at-{{ book.book_id }}">
+                                                            Completion date
+                                                        </label>
+
+                                                        <input
+                                                            type="date"
+                                                            id="completed-at-{{ book.book_id }}"
+                                                            name="completed_at"
+                                                            value="{{ book.completed_at.strftime('%Y-%m-%d') if book.completed_at else '' }}"
+                                                        >
+                                                    </div>
+
+                                                </div>
+
+                                                <p class="reading-progress-help">
+                                                    Marking a book as Completed automatically fills in the completion date and, if known, sets the current page to the total page count.
+                                                </p>
+
+                                                <button
+                                                    type="submit"
+                                                    class="reading-progress-save"
+                                                >
+                                                    <span aria-hidden="true">✓</span>
+                                                    Save reading progress
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </section>
+
+
+                                    <!-- Edit and Delete -->
+                                    <div class="book-card-actions">
+
+                                        <a
+                                            class="button-primary edit-button"
+                                            href="{{ url_for('edit_book', book_id=book.book_id) }}"
+                                        >
+                                            <span aria-hidden="true">✎</span>
+                                            Edit Book
+                                        </a>
+
+
+                                        <form
+                                            class="delete-book-form"
+                                            action="{{ url_for('delete_book', book_id=book.book_id) }}"
+                                            method="POST"
+                                            data-book-title="{{ book.title }}"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="sort_by"
+                                                value="{{ sort_by }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="button-primary delete-button"
+                                            >
+                                                <span
+                                                    class="delete-button-icon"
+                                                    aria-hidden="true"
+                                                >🗑</span>
+
+                                                Delete Book
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="empty-state" id="no-search-results" hidden>
+                    <h2 id="no-results-heading">No matching books found</h2>
+                    <p id="no-results-description">
+                        Try changing your filter or search terms.
+                    </p>
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <span class="empty-icon" aria-hidden="true">▤</span>
+
+                    <h2>Your library is waiting.</h2>
+
+                    <p>
+                        Add your first book to start building your collection.
+                    </p>
+
+                    <a
+                        href="{{ url_for('add_book') }}"
+                        class="button-primary"
+                    >Add your first book</a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+        <p>Made for the love of books.</p>
+    </footer>
+
+
+    <script>
+        /*
+         * Browser preference helpers.
+         */
+
+        function readPreference(key, fallback = "") {
+            try {
+                return localStorage.getItem(key) ?? fallback;
+            } catch (error) {
+                return fallback;
+            }
+        }
+
+        function savePreference(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (error) {
+                // The page continues to work if browser storage is unavailable.
+            }
+        }
+
+
+        /*
+         * AJAX feedback message.
+         */
+
+        const ajaxFeedback = document.getElementById("ajax-feedback");
+        const ajaxFeedbackMessage =
+            document.getElementById("ajax-feedback-message");
+
+        let feedbackTimer = null;
+
+        function showAjaxFeedback(message, isError = false) {
+            if (!ajaxFeedback || !ajaxFeedbackMessage) {
+                return;
+            }
+
+            ajaxFeedbackMessage.textContent = message;
+            ajaxFeedback.hidden = false;
+
+            ajaxFeedback.classList.toggle("has-error", isError);
+
+            if (feedbackTimer) {
+                window.clearTimeout(feedbackTimer);
+            }
+
+            feedbackTimer = window.setTimeout(() => {
+                ajaxFeedback.hidden = true;
+            }, 3500);
+        }
+
+
+        /*
+         * Per-book currency conversion.
+         * Changes display only, never the stored price.
+         */
+
+        const currencySymbols = {{ currency_symbols|tojson }};
+        const conversionUrl = {{ url_for('convert_book_currency')|tojson }};
+
+        document.querySelectorAll(".book-price").forEach(priceBlock => {
+            const select = priceBlock.querySelector(".book-currency-select");
+            const priceValue = priceBlock.querySelector(".price-value");
+            const priceLabel = priceBlock.querySelector(".price-label");
+            const originalPrice = priceBlock.querySelector(".original-price");
+            const note = priceBlock.querySelector(".price-conversion-note");
+
+            const originalCurrency = priceBlock.dataset.originalCurrency;
+            const originalAmount = Number(priceBlock.dataset.originalAmount);
+
+            if (!select || !priceValue || !priceLabel || !originalPrice || !note) {
+                return;
+            }
+
+            const formatPrice = (currency, amount) => {
+                const symbol = currencySymbols[currency] || currency;
+                return `${symbol}${Number(amount).toFixed(2)}`;
+            };
+
+            const showOriginalPrice = () => {
+                select.value = originalCurrency;
+
+                priceValue.textContent =
+                    formatPrice(originalCurrency, originalAmount);
+
+                priceLabel.textContent = "Printed price";
+                originalPrice.hidden = true;
+                note.textContent = "";
+            };
+
+            select.addEventListener("change", async () => {
+                const targetCurrency = select.value;
+                note.textContent = "";
+
+                if (targetCurrency === originalCurrency) {
+                    showOriginalPrice();
+                    return;
+                }
+
+                priceLabel.textContent = "Displayed price";
+                note.textContent = "Converting…";
+                select.disabled = true;
+
+                try {
+                    const response = await fetch(conversionUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            amount: originalAmount,
+                            source_currency: originalCurrency,
+                            target_currency: targetCurrency
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(
+                            result.error || "Conversion unavailable."
+                        );
+                    }
+
+                    priceValue.textContent =
+                        formatPrice(targetCurrency, result.amount);
+
+                    originalPrice.textContent =
+                        `Original: ${formatPrice(originalCurrency, originalAmount)}`;
+
+                    originalPrice.hidden = false;
+                    priceLabel.textContent = "Displayed price";
+
+                    note.textContent =
+                        "Converted for display only; original price is unchanged.";
+
+                } catch (error) {
+                    showOriginalPrice();
+
+                    note.textContent =
+                        "Conversion unavailable. Showing the original price.";
+
+                } finally {
+                    select.disabled = false;
+                }
+            });
+        });
+
+
+        /*
+        * Expand and collapse each book's reading progress editor.
+        */
+
+        document.querySelectorAll(".reading-progress-section").forEach(section => {
+            const toggle = section.querySelector(".reading-progress-heading");
+            const panel = section.querySelector(".reading-progress-panel");
+            const icon = section.querySelector(".reading-progress-toggle-icon");
+
+            if (!toggle || !panel) {
+                return;
+            }
+
+            toggle.addEventListener("click", () => {
+                const isExpanded =
+                toggle.getAttribute("aria-expanded") === "true";
+
+                const nextExpanded = !isExpanded;
+
+                toggle.setAttribute("aria-expanded", String(nextExpanded));
+                panel.hidden = !nextExpanded;
+
+                if (icon) {
+                    icon.textContent = nextExpanded ? "⌃" : "⌄";
+                }
+            });
+        });
+
+
+        /*
+         * Expand and collapse book details.
+         */
+
+        document.querySelectorAll(".book-card").forEach(card => {
+            const toggle = card.querySelector(".book-details-toggle");
+            const details = card.querySelector(".book-card-extra");
+
+            if (!toggle || !details) {
+                return;
+            }
+
+            card.addEventListener("pointerleave", () => {
+                card.classList.remove("outline-suppressed");
+            });
+
+            toggle.addEventListener("click", () => {
+                const isExpanded =
+                    toggle.getAttribute("aria-expanded") === "true";
+
+                const nextExpanded = !isExpanded;
+
+                toggle.setAttribute(
+                    "aria-expanded",
+                    String(nextExpanded)
+                );
+
+                details.hidden = !nextExpanded;
+                card.classList.toggle("is-expanded", nextExpanded);
+
+                const label = toggle.querySelector(".details-toggle-label");
+                const icon = toggle.querySelector(".details-toggle-icon");
+
+                if (label) {
+                    label.textContent = nextExpanded
+                        ? "Hide details"
+                        : "View details";
+                }
+
+                if (icon) {
+                    icon.textContent = nextExpanded ? "⌃" : "⌄";
+                }
+
+                if (nextExpanded) {
+                    card.classList.remove("outline-suppressed");
+
+                    details.querySelectorAll(".description-section")
+                        .forEach(setupDescriptionToggle);
+
+                } else {
+                    toggle.blur();
+
+                    if (card.matches(":hover")) {
+                        card.classList.add("outline-suppressed");
+                    } else {
+                        card.classList.remove("outline-suppressed");
+                    }
+                }
+            });
+        });
+
+
+        /*
+         * Description Read more / Read less.
+         */
+
+        function setupDescriptionToggle(section) {
+            const description = section.querySelector(".book-description");
+            const button = section.querySelector(".description-toggle");
+
+            if (
+                !description ||
+                !button ||
+                section.dataset.descriptionReady === "true"
+            ) {
+                return;
+            }
+
+            section.dataset.descriptionReady = "true";
+
+            requestAnimationFrame(() => {
+                if (description.scrollHeight > description.clientHeight + 2) {
+                    button.hidden = false;
+                } else {
+                    description.classList.remove("is-collapsed");
+                    button.hidden = true;
+                }
+            });
+
+            button.addEventListener("click", () => {
+                const expanded =
+                    button.getAttribute("aria-expanded") === "true";
+
+                button.setAttribute(
+                    "aria-expanded",
+                    String(!expanded)
+                );
+
+                description.classList.toggle("is-collapsed", expanded);
+
+                button.textContent = expanded
+                    ? "Read more"
+                    : "Read less";
+            });
+        }
+
+
+        /*
+         * Filtering, searching and sorting.
+         */
+
+        const bookGrid = document.getElementById("book-grid");
+        const filterSelect = document.getElementById("book-filter");
+        const sortSelect = document.getElementById("book-sort");
+        const searchInput = document.getElementById("book-search");
+
+        const noResults = document.getElementById("no-search-results");
+        const noResultsHeading = document.getElementById("no-results-heading");
+        const noResultsDescription =
+            document.getElementById("no-results-description");
+
+        const bookCount = document.getElementById("book-count");
+
+        const cards = Array.from(
+            document.querySelectorAll(".book-card")
+        );
+
+        const filterStorageKey = "plmLibraryFilter";
+        const searchStorageKey = "plmLibrarySearch";
+        const sortStorageKey = "plmLibrarySort";
+
+        const validFilters = new Set([
+            "all",
+            "favorites",
+            "want-to-read",
+            "currently-reading",
+            "on-hold",
+            "completed"
+        ]);
+
+
+
+        /*
+         * Restore the chosen filter.
+         * A fresh visit to /books defaults to All Books.
+         */
+
+        if (filterSelect) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlFilter = urlParams.get("filter");
+
+            const initialFilter = validFilters.has(urlFilter)
+            ? urlFilter
+            : "all";
+
+            filterSelect.value = initialFilter;
+
+            savePreference(filterStorageKey, initialFilter);
+        }
+
+
+        /*
+         * Restore search text.
+         */
+
+        if (searchInput) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlSearch = urlParams.get("q");
+            const storedSearch = readPreference(searchStorageKey, "");
+
+            searchInput.value = urlSearch !== null
+                ? urlSearch
+                : storedSearch;
+        }
+
+
+        /*
+         * Restore sorting.
+         */
+
+
+        if (sortSelect) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlSort = urlParams.get("sort");
+            const storedSort = readPreference(sortStorageKey, "");
+
+            const validSorts = [
+                "title",
+                "date_added",
+                "author",
+                "genre",
+                "publisher"
+            ];
+
+            const initialSort = urlSort || storedSort || sortSelect.value;
+
+            sortSelect.value = initialSort === "recent"
+                ? "date_added"
+                : validSorts.includes(initialSort)
+                    ? initialSort
+                    : "title";
+        }
+
+        const sortOrderSelect = document.getElementById("sort-order");
+
+        if (sortOrderSelect) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlOrder = urlParams.get("order");
+            const storedOrder = readPreference("plmLibrarySortOrder", "");
+
+            const initialOrder = urlOrder || storedOrder || sortOrderSelect.value;
+
+            sortOrderSelect.value = ["asc", "desc"].includes(initialOrder)
+                ? initialOrder
+                : "asc";
+        }
+
+
+
+        /*
+         * Update URL without a page reload.
+         */
+
+
+                function updateLibraryURL() {
+            const params = new URLSearchParams(window.location.search);
+
+            if (sortSelect) {
+                params.set("sort", sortSelect.value);
+            }
+
+            const orderSelectForURL = document.getElementById("sort-order");
+
+            if (orderSelectForURL) {
+                params.set("order", orderSelectForURL.value);
+            }
+
+            if (filterSelect && filterSelect.value !== "all") {
+                params.set("filter", filterSelect.value);
+            } else {
+                params.delete("filter");
+            }
+
+            if (searchInput && searchInput.value.trim()) {
+                params.set("q", searchInput.value.trim());
+            } else {
+                params.delete("q");
+            }
+
+            const queryString = params.toString();
+
+            const newURL = queryString
+                ? `${window.location.pathname}?${queryString}`
+                : window.location.pathname;
+
+            window.history.replaceState({}, "", newURL);
+        }
+
+
+        /*
+         * Sort cards in the existing grid.
+         */
+
+
+        function sortBookCards() {
+            if (!bookGrid || !sortSelect) {
+                return;
+            }
+
+            const sortMode = sortSelect.value;
+            const sortOrderSelect = document.getElementById("sort-order");
+            const sortOrder = sortOrderSelect ? sortOrderSelect.value : "asc";
+            const direction = sortOrder === "desc" ? -1 : 1;
+
+            const cards = Array.from(bookGrid.querySelectorAll(".book-card"));
+
+            const collator = new Intl.Collator(undefined, {
+                sensitivity: "base",
+                numeric: true
+            });
+
+            cards.sort((cardA, cardB) => {
+                let comparison = 0;
+
+                if (sortMode === "date_added") {
+                    const parsedA = Date.parse(cardA.dataset.createdAt || "");
+                    const parsedB = Date.parse(cardB.dataset.createdAt || "");
+
+                    const dateA = Number.isFinite(parsedA) ? parsedA : 0;
+                    const dateB = Number.isFinite(parsedB) ? parsedB : 0;
+
+                    comparison = dateA - dateB;
+                } else {
+                    const fieldMap = {
+                        title: "title",
+                        author: "author",
+                        genre: "genre",
+                        publisher: "publisher"
+                    };
+
+                    const field = fieldMap[sortMode] || "title";
+
+                    comparison = collator.compare(
+                        cardA.dataset[field] || "",
+                        cardB.dataset[field] || ""
+                    );
+                }
+
+                if (comparison !== 0) {
+                    return comparison * direction;
+                }
+
+                return collator.compare(
+                    cardA.dataset.title || "",
+                    cardB.dataset.title || ""
+                );
+            });
+
+            cards.forEach(card => {
+                bookGrid.appendChild(card);
+            });
+
+            document.querySelectorAll('input[name="sort_by"]').forEach(input => {
+                input.value = sortMode;
+            });
+
+            document.querySelectorAll('input[name="sort_order"]').forEach(input => {
+                input.value = sortOrder;
+            });
+        }
+
+
+        /*
+         * Determine whether a card matches the selected filter.
+         */
+
+        function cardMatchesFilter(card, selectedFilter) {
+            if (selectedFilter === "all") {
+                return true;
+            }
+
+            if (selectedFilter === "favorites") {
+                return card.dataset.favorite === "true";
+            }
+
+            return card.dataset.readingStatus === selectedFilter;
+        }
+
+
+        /*
+         * Apply filter and search together.
+         */
+
+        function applyLibraryControls() {
+            const selectedFilter = filterSelect
+                ? filterSelect.value
+                : "all";
+
+            const query = searchInput
+                ? searchInput.value.trim().toLowerCase()
+                : "";
+
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const matchesFilter = cardMatchesFilter(
+                    card,
+                    selectedFilter
+                );
+
+                const matchesSearch = (
+                    card.dataset.search || ""
+                ).includes(query);
+
+                const shouldShow = matchesFilter && matchesSearch;
+
+                card.hidden = !shouldShow;
+
+                if (shouldShow) {
+                    visibleCount++;
+                }
+            });
+
+
+            if (bookCount) {
+                const totalCount = cards.length;
+
+                if (
+                    visibleCount === totalCount &&
+                    selectedFilter === "all" &&
+                    query === ""
+                ) {
+                    bookCount.textContent =
+                        `${totalCount} ${totalCount === 1 ? "book" : "books"} in your collection`;
+
+                } else {
+                    bookCount.textContent =
+                        `Showing ${visibleCount} of ${totalCount} books`;
+                }
+            }
+
+
+            if (noResults) {
+                noResults.hidden = visibleCount > 0;
+            }
+
+            if (visibleCount === 0 && noResultsHeading && noResultsDescription) {
+                if (selectedFilter === "favorites" && !query) {
+                    noResultsHeading.textContent = "No favorite books yet";
+                    noResultsDescription.textContent =
+                        "Click the heart on a book to add it to Favorites.";
+
+                } else if (selectedFilter !== "all" && !query) {
+                    noResultsHeading.textContent = "No books in this category";
+                    noResultsDescription.textContent =
+                        "Try another reading status or choose All Books.";
+
+                } else {
+                    noResultsHeading.textContent = "No matching books found";
+                    noResultsDescription.textContent =
+                        "Try changing your filter or search terms.";
+                }
+            }
+
+            updateLibraryURL();
+        }
+
+
+        if (filterSelect) {
+            filterSelect.addEventListener("change", () => {
+                savePreference(filterStorageKey, filterSelect.value);
+                applyLibraryControls();
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+                savePreference(searchStorageKey, searchInput.value);
+                applyLibraryControls();
+            });
+        }
+
+        if (sortSelect) {
+            sortSelect.addEventListener("change", () => {
+                savePreference(sortStorageKey, sortSelect.value);
+                sortBookCards();
+                applyLibraryControls();
+            });
+        }
+
+
+
+        if (sortOrderSelect) {
+            sortOrderSelect.addEventListener("change", () => {
+                savePreference("plmLibrarySortOrder", sortOrderSelect.value);
+                sortBookCards();
+                applyLibraryControls();
+            });
+        }
+
+
+
+        /*
+         * Favorite button AJAX handler.
+         *
+         * The browser does not navigate or reload the page.
+         * The heart is updated after Flask confirms that MySQL
+         * has successfully saved the new status.
+         */
+
+        document.querySelectorAll(".favorite-form").forEach(form => {
+            form.addEventListener("submit", async event => {
+                event.preventDefault();
+
+                const button = form.querySelector(".favorite-toggle");
+                const card = form.closest(".book-card");
+
+                if (!button || !card || button.disabled) {
+                    return;
+                }
+
+                const bookTitle = form.dataset.bookTitle || "Book";
+
+                const wasFavorite =
+                    button.getAttribute("aria-pressed") === "true";
+
+                const previousLabel = button.getAttribute("aria-label");
+                const previousTitle = button.getAttribute("title");
+
+                button.disabled = true;
+                button.setAttribute("aria-busy", "true");
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        },
+                        body: new FormData(form)
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(
+                            result.error || "Unable to update Favorites."
+                        );
+                    }
+
+                    const isFavorite = Boolean(result.is_favorite);
+
+                    /*
+                     * Update the card's filter data and the heart.
+                     */
+
+                    card.dataset.favorite = isFavorite ? "true" : "false";
+
+                    button.classList.toggle("is-favorite", isFavorite);
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(isFavorite)
+                    );
+
+                    button.setAttribute(
+                        "aria-label",
+                        isFavorite
+                            ? `Remove ${bookTitle} from Favorites`
+                            : `Add ${bookTitle} to Favorites`
+                    );
+
+                    button.setAttribute(
+                        "title",
+                        isFavorite
+                            ? "Remove from Favorites"
+                            : "Add to Favorites"
+                    );
+
+                    const heart = button.querySelector("span");
+
+                    if (heart) {
+                        heart.textContent = isFavorite ? "♥" : "♡";
+                    }
+
+                    /*
+                     * Reapply the current filter without reloading.
+                     * An unfavorited card disappears immediately if
+                     * the Favorites filter is currently selected.
+                     */
+
+                    savePreference(
+                        filterStorageKey,
+                        filterSelect ? filterSelect.value : "all"
+                    );
+
+                    applyLibraryControls();
+
+                    showAjaxFeedback(
+                        result.message ||
+                        (isFavorite
+                            ? `"${bookTitle}" added to Favorites.`
+                            : `"${bookTitle}" removed from Favorites.`)
+                    );
+
+                } catch (error) {
+                    /*
+                     * Do not change the heart on failure.
+                     * The database is still the source of truth.
+                     */
+
+                    button.setAttribute("aria-pressed", String(wasFavorite));
+
+                    if (previousLabel) {
+                        button.setAttribute("aria-label", previousLabel);
+                    }
+
+                    if (previousTitle) {
+                        button.setAttribute("title", previousTitle);
+                    }
+
+                    showAjaxFeedback(
+                        error.message || "Unable to update Favorites. Please try again.",
+                        true
+                    );
+
+                } finally {
+                    button.disabled = false;
+                    button.removeAttribute("aria-busy");
+                }
+            });
+        });
+
+
+        /*
+         * Personal rating AJAX handler.
+         *
+         * Saves or clears a rating without reloading the library.
+         * Updates the stars only after Flask confirms the save.
+         */
+
+        document.querySelectorAll(".personal-rating-form").forEach(form => {
+            let clickedButton = null;
+
+            const starsContainer = form.querySelector(
+                ".personal-rating-stars"
+            );
+
+            const footer = form.querySelector(".personal-rating-footer");
+
+            const starButtons = Array.from(
+                form.querySelectorAll(".personal-rating-star")
+            );
+
+            const clearButton = form.querySelector(".clear-personal-rating");
+
+            if (!starsContainer || !footer || starButtons.length === 0) {
+                return;
+            }
+
+            /*
+             * Remember which submit button was clicked.
+             * This preserves the clicked star's value in the AJAX request.
+             */
+
+            form.querySelectorAll('button[type="submit"]').forEach(button => {
+                button.addEventListener("click", () => {
+                    clickedButton = button;
+                });
+            });
+
+            function updateRatingDisplay(rating) {
+                const numericRating = rating === null
+                    ? 0
+                    : Number(rating);
+
+                starButtons.forEach((button, index) => {
+                    const selected = index < numericRating;
+
+                    button.classList.toggle("is-selected", selected);
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(selected)
+                    );
+                });
+
+                footer.replaceChildren();
+
+                if (numericRating > 0) {
+                    const ratingValue = document.createElement("span");
+                    ratingValue.className = "personal-rating-value";
+                    ratingValue.textContent = `${numericRating}/5`;
+
+                    const clear = document.createElement("button");
+                    clear.type = "submit";
+                    clear.name = "personal_rating";
+                    clear.value = "";
+                    clear.className = "clear-personal-rating";
+                    clear.textContent = "Clear rating";
+
+                    footer.append(ratingValue, clear);
+                } else {
+                    const empty = document.createElement("span");
+                    empty.className = "personal-rating-empty";
+                    empty.textContent = "Not rated yet";
+
+                    footer.append(empty);
+                }
+            }
+
+            form.addEventListener("submit", async event => {
+                event.preventDefault();
+
+                const submitter = event.submitter || clickedButton;
+
+                if (!submitter) {
+                    return;
+                }
+
+                const isStarButton =
+                    submitter.classList.contains("personal-rating-star");
+
+                const isClearButton =
+                    submitter.classList.contains("clear-personal-rating");
+
+                if (!isStarButton && !isClearButton) {
+                    return;
+                }
+
+                const rating = submitter.value;
+                const previousDisabledState = submitter.disabled;
+
+                /*
+                 * Build the request explicitly so the selected button's
+                 * value, including the empty Clear rating value, is sent.
+                 */
+
+                const formData = new FormData(form);
+                formData.set("personal_rating", rating);
+
+                submitter.disabled = true;
+                submitter.setAttribute("aria-busy", "true");
+
+                starButtons.forEach(button => {
+                    button.disabled = true;
+                });
+
+                if (clearButton) {
+                    clearButton.disabled = true;
+                }
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(
+                            result.error ||
+                            "Unable to save your personal rating."
+                        );
+                    }
+
+                    updateRatingDisplay(result.personal_rating);
+
+                    showAjaxFeedback(
+                        result.message ||
+                        "Your personal rating has been saved."
+                    );
+
+                } catch (error) {
+                    showAjaxFeedback(
+                        error.message ||
+                        "Unable to save your personal rating. Please try again.",
+                        true
+                    );
+
+                } finally {
+                    starButtons.forEach(button => {
+                        button.disabled = false;
+                        button.removeAttribute("aria-busy");
+                    });
+
+                    const updatedClearButton = footer.querySelector(
+                        ".clear-personal-rating"
+                    );
+
+                    if (updatedClearButton) {
+                        updatedClearButton.disabled = false;
+                        updatedClearButton.removeAttribute("aria-busy");
+                    }
+
+                    submitter.disabled = previousDisabledState;
+                    submitter.removeAttribute("aria-busy");
+
+                    clickedButton = null;
+                }
+            });
+        });
+
+
+        /*
+         * Confirm before permanently deleting a book.
+         */
+
+        document.querySelectorAll(".delete-book-form").forEach(form => {
+            form.addEventListener("submit", event => {
+                const title = form.dataset.bookTitle;
+
+                const confirmed = window.confirm(
+                    `Delete "${title}" permanently? This action cannot be undone.`
+                );
+
+                if (!confirmed) {
+                    event.preventDefault();
+                }
+            });
+        });
+
+
+        /*
+         * Initialize filters, search and sorting.
+         */
+
+        sortBookCards();
+
+        savePreference(
+            filterStorageKey,
+            filterSelect ? filterSelect.value : "all"
+        );
+
+        savePreference(
+            searchStorageKey,
+            searchInput ? searchInput.value : ""
+        );
+
+        savePreference(
+            sortStorageKey,
+            sortSelect ? sortSelect.value : "title"
+        );
+
+        savePreference(
+            "plmLibrarySortOrder",
+            sortOrderSelect ? sortOrderSelect.value : "asc"
+        );
+
+        applyLibraryControls();
+
+    </script>
+
 </body>
 </html>

@@ -18,3 +18,10 @@ venv/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Personal book cover uploads
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Local database backup (may contain personal data)
+personallibrarymanager_backup.sql

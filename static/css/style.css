@@ -1,0 +1,2704 @@
+/* =========================================================
+   THE FOLIO CELLAR — RUSTIC VINTAGE DESIGN
+   ========================================================= */
+
+/* 1. Design tokens */
+
+:root {
+    --page-bg: #F2E8D5;
+    --card-bg: #FFFAF0;
+    --text: #302117;
+    --muted: #75634F;
+
+    --walnut: #302117;
+    --walnut-light: #594333;
+
+    --accent: #526B52;
+    --accent-hover: #3E543F;
+
+    --gold: #B58B4B;
+    --gold-light: #E2C58E;
+    --gold-dark: #8C691A;
+    --outline-gold: #936A18;
+
+    --border: #D8C4A4;
+    --cover-bg: #E8DAC5;
+    --soft-bg: #F0E6D4;
+
+    --success-bg: #E8EEE2;
+    --success-text: #31553A;
+
+    /* Favorites and personal ratings */
+    --favorite: #71352D;
+    --favorite-hover: #57271F;
+    --star-inactive: #B9A88D;
+    --star-active: #A78332;
+
+    --shadow:
+        0 5px 18px rgba(56, 42, 32, 0.07),
+        0 1px 3px rgba(56, 42, 32, 0.04);
+
+    --shadow-hover:
+        0 12px 30px rgba(56, 42, 32, 0.13);
+
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+    --sans: "DM Sans", "Segoe UI", Arial, sans-serif;
+}
+
+
+/* 2. Global foundation */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background-color: var(--page-bg);
+
+    background-image:
+        radial-gradient(
+            ellipse at 12% 8%,
+            rgba(184, 149, 114, 0.12),
+            transparent 42%
+        ),
+        radial-gradient(
+            ellipse at 90% 80%,
+            rgba(88, 64, 38, 0.055),
+            transparent 40%
+        );
+
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.65;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+img {
+    max-width: 100%;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+::selection {
+    color: #FFFAF0;
+    background: var(--accent);
+}
+
+
+/* 3. Header */
+
+.site-header {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 17px 6.5%;
+
+    background: linear-gradient(115deg, #302117, #493323);
+    border-bottom: 3px solid var(--gold);
+    box-shadow: 0 3px 14px rgba(56, 42, 32, 0.12);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+
+    color: #FFFAF0;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.brand:hover {
+    color: var(--gold-light);
+}
+
+.brand-icon,
+.brand-mark {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid var(--accent-hover);
+    border-radius: 8px;
+
+    background: linear-gradient(145deg, #60785D, #405840);
+    color: #FFFAF0;
+
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.brand-mark {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+
+/* 4. Buttons */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 10px 17px;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 11px 17px;
+
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+
+    background: linear-gradient(145deg, #60785D, #526B52);
+    color: #FFFAF0;
+
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.button-primary:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+    box-shadow: 0 4px 12px rgba(34, 53, 40, 0.18);
+}
+
+.button-primary:active {
+    transform: translateY(1px);
+}
+
+.button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 10px 17px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: rgba(255, 249, 239, 0.85);
+    color: var(--walnut);
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.button-secondary:hover {
+    border-color: var(--gold);
+    background: #FFF7E8;
+}
+
+.site-header .button-secondary {
+    border-color: rgba(226, 197, 142, 0.58);
+    background: rgba(255, 250, 240, 0.08);
+    color: #FFFAF0;
+}
+
+.site-header .button-secondary:hover {
+    border-color: var(--gold-light);
+    background: rgba(226, 197, 142, 0.16);
+}
+
+.site-header .button-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #FFFAF0;
+}
+
+.site-header .button-primary:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+}
+
+.button-plus {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.button-primary:focus-visible,
+.button-secondary:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+    outline: 3px solid rgba(82, 107, 82, 0.55);
+    outline-offset: 3px;
+}
+
+
+/* 5. Shared page layout */
+
+.page-container,
+.container {
+    width: min(1280px, 87%);
+    margin: 0 auto;
+}
+
+.hero {
+    position: relative;
+    padding: 68px 0 48px;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+}
+
+.hero h1,
+.form-header h1,
+.form-intro h1 {
+    margin: 0;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: clamp(34px, 4.3vw, 53px);
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    line-height: 1.2;
+}
+
+.hero h1::after {
+    display: block;
+    width: 65px;
+    height: 3px;
+    margin-top: 17px;
+
+    background: var(--gold);
+    content: "";
+}
+
+.hero-description {
+    max-width: 600px;
+    margin: 20px 0 0;
+
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+
+/* 6. Flash messages */
+
+.flash-messages {
+    margin: 0 0 24px;
+}
+
+.flash-message,
+.notice {
+    margin: 0 0 9px;
+    padding: 13px 16px;
+
+    border: 1px solid #C9D9BF;
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+
+    background: var(--success-bg);
+    color: var(--success-text);
+    font-size: 13px;
+}
+
+
+/* 7. Library toolbar */
+
+.library-section {
+    padding-bottom: 72px;
+}
+
+.library-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    margin-bottom: 28px;
+}
+
+.library-toolbar h2 {
+    margin: 0;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+
+.book-count {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.search-wrapper {
+    position: relative;
+    width: min(350px, 100%);
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+
+    color: var(--muted);
+    font-size: 23px;
+    line-height: 1;
+
+    transform: translateY(-55%);
+    pointer-events: none;
+}
+
+.search-wrapper input {
+    width: 100%;
+    min-height: 45px;
+    padding: 11px 15px 11px 42px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: rgba(255, 249, 239, 0.95);
+    color: var(--text);
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.search-wrapper input::placeholder {
+    color: #968773;
+}
+
+.search-wrapper input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(82, 107, 82, 0.12);
+}
+
+.sort-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+}
+
+.sort-wrapper label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sort-wrapper select {
+    min-height: 45px;
+    max-width: 100%;
+    padding: 10px 32px 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--card-bg);
+    color: var(--text);
+
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.sort-wrapper select:focus-visible {
+    outline: 3px solid rgba(82, 107, 82, 0.4);
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   8. Book grid and card sizing
+   ========================================================= */
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    /*
+       Keep cards aligned to the top, so expanding one does not
+       stretch or shrink the other cards in the same row.
+    */
+    align-items: start;
+
+    gap: 25px;
+    width: 100%;
+}
+
+.book-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+
+    /*
+       Give collapsed cards a shared baseline height.
+       Expanded cards grow beyond this height when necessary.
+    */
+    min-height: 535px;
+
+    overflow: visible;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background-color: var(--card-bg);
+    background-image:
+        linear-gradient(
+            rgba(255, 250, 237, 0.16),
+            rgba(255, 250, 237, 0.16)
+        ),
+        url("../images/crumpled-parchment.jpg");
+
+    background-position: center;
+    background-size: cover;
+
+    box-shadow: var(--shadow);
+
+    outline: 3px solid transparent;
+    outline-offset: 0;
+
+    transition:
+        outline-color 0.15s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.book-card:hover:not(.is-expanded):not(.outline-suppressed) {
+    transform: translateY(-3px);
+    border-color: #C7AD80;
+    box-shadow: var(--shadow-hover);
+}
+
+.book-card:hover:not(.is-expanded):not(.outline-suppressed),
+.book-card:focus-within:not(.is-expanded):not(.outline-suppressed) {
+    outline-color: var(--outline-gold);
+}
+
+.book-card.is-expanded {
+    z-index: auto;
+
+    transform: none !important;
+    border-color: var(--outline-gold);
+    box-shadow: var(--shadow);
+
+    outline-color: var(--outline-gold);
+}
+
+/* Clear the outline immediately after closing a card. */
+
+.book-card.outline-suppressed,
+.book-card.outline-suppressed:hover,
+.book-card.outline-suppressed:focus-within {
+    transform: none !important;
+    border-color: var(--border) !important;
+    box-shadow: var(--shadow) !important;
+    outline-color: transparent !important;
+}
+
+
+/* 9. Book covers */
+
+.book-cover {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 300px;
+    flex-shrink: 0;
+    padding: 16px;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255, 249, 239, 0.8),
+            transparent 75%
+        ),
+        var(--cover-bg);
+
+    border-bottom: 1px solid var(--border);
+}
+
+.book-cover img {
+    display: block;
+    flex: 0 1 auto;
+
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+
+    object-fit: contain;
+    object-position: center;
+}
+
+.cover-placeholder {
+    display: flex;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.placeholder-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    width: 55px;
+    height: 65px;
+
+    border: 1px solid #C4AD85;
+    border-radius: 4px;
+
+    background: rgba(255, 249, 239, 0.45);
+    color: var(--walnut-light);
+    font-size: 30px;
+}
+
+
+/* 10. Book summary */
+
+.book-details {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 21px;
+}
+
+.book-card-summary {
+    /*
+       Reserve consistent room for the title, author and details
+       toggle. This helps keep the bottoms aligned across a row.
+    */
+    display: flex;
+    min-width: 0;
+    min-height: 190px;
+    flex-direction: column;
+}
+
+.book-card-summary > .book-details-toggle {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* Keep the title and Favorites button on the same row. */
+
+.book-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.book-title-row .book-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.book-title {
+    min-width: 0;
+    margin: 0;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+.book-author {
+    margin: 7px 0 12px;
+
+    color: var(--muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.new-book-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 7px;
+
+    border: 1px solid #C9D9BF;
+    border-radius: 4px;
+
+    background: #E8EEE2;
+    color: #31553A;
+
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   10A. Favorites heart
+   ========================================================= */
+
+.favorite-form {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+}
+
+.favorite-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background: rgba(255, 250, 240, 0.75);
+    color: #8A7762;
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.favorite-toggle span {
+    display: block;
+    line-height: 1;
+    transform: translateY(-1px);
+}
+
+.favorite-toggle:hover {
+    border-color: #B77B70;
+    background: #F8EBE5;
+    color: var(--favorite);
+
+    transform: scale(1.06);
+}
+
+.favorite-toggle.is-favorite {
+    border-color: #B77B70;
+    background: #F4E3DC;
+    color: var(--favorite);
+}
+
+.favorite-toggle.is-favorite:hover {
+    border-color: var(--favorite-hover);
+    background: #EED4CB;
+    color: var(--favorite-hover);
+}
+
+.favorite-toggle:active {
+    transform: scale(0.96);
+}
+
+.favorite-toggle:focus-visible {
+    outline: 3px solid rgba(147, 106, 24, 0.45);
+    outline-offset: 3px;
+}
+
+
+/* 11. View details / Hide details button */
+
+.book-details-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: 100%;
+    min-height: 42px;
+    margin-top: auto;
+    padding: 10px 13px;
+
+    border: 1px solid var(--outline-gold);
+    border-radius: 8px;
+
+    background: rgba(226, 197, 142, 0.52);
+    color: var(--walnut);
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.book-details-toggle:hover {
+    border-color: #704F13;
+    background: rgba(226, 197, 142, 0.78);
+}
+
+.book-details-toggle:focus-visible {
+    outline: 2px solid var(--outline-gold);
+    outline-offset: 2px;
+}
+
+.details-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 16px;
+    height: 16px;
+
+    font-size: 0;
+    line-height: 1;
+}
+
+.details-toggle-icon::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+
+    transform: rotate(45deg);
+}
+
+.book-details-toggle[aria-expanded="true"] .details-toggle-icon::before {
+    margin-top: 4px;
+    transform: rotate(225deg);
+}
+
+
+/* =========================================================
+   12. Expanded details panel
+   ========================================================= */
+
+/*
+   The panel is in normal document flow, not absolutely positioned.
+   The entire book card grows when opened, and other cards retain
+   their own height. No second outline or panel background is drawn.
+*/
+
+.book-card .book-card-extra {
+    position: static;
+    inset: auto;
+    z-index: auto;
+
+    display: block;
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+
+    margin: 0;
+    margin-top: 17px;
+    padding: 0;
+
+    border: 0 !important;
+    border-radius: 0;
+
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.book-card .book-card-extra[hidden] {
+    display: none !important;
+}
+
+
+/* 13. Genre badge */
+
+.book-genre {
+    align-self: flex-start;
+    max-width: 100%;
+    margin: 0 0 10px;
+    padding: 4px 9px;
+
+    border: 1px solid #D9CBAF;
+    border-radius: 4px;
+
+    background: var(--soft-bg);
+    color: #4C6049;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    line-height: 1.5;
+    text-transform: uppercase;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* 14. Book metadata */
+
+.book-metadata {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 9px;
+
+    padding: 15px 0;
+
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.metadata-row {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    font-size: 12px;
+}
+
+.metadata-row > span {
+    min-width: 0;
+}
+
+.metadata-row > span:last-child {
+    max-width: 65%;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.metadata-label {
+    color: var(--muted);
+}
+
+.metadata-value {
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+
+/* 15. Printed price and currency */
+
+.book-price {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 16px;
+    row-gap: 5px;
+
+    width: 100%;
+    min-width: 0;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.book-price .price-label {
+    grid-column: 1;
+    grid-row: 1;
+    display: block;
+    width: 100%;
+    margin: 0;
+    text-align: left;
+}
+
+.book-price > strong {
+    grid-column: 1;
+    grid-row: 2;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    line-height: 1.5;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.book-price .price-value {
+    display: inline;
+    text-align: left;
+}
+
+.book-price .original-price {
+    display: block;
+    width: 100%;
+    margin-top: 3px;
+
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+    text-align: left;
+}
+
+.book-price .original-price[hidden] {
+    display: none;
+}
+
+.book-price .book-currency-control {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 5px;
+
+    width: 100%;
+    min-width: 0;
+    margin-top: 0;
+    text-align: left;
+}
+
+.book-price .book-currency-control label {
+    display: block;
+    width: 100%;
+
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.book-price .book-currency-select {
+    display: block;
+    width: 100%;
+    max-width: 180px;
+    min-width: 0;
+    min-height: 36px;
+    margin: 0;
+    padding: 6px 28px 6px 10px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: var(--card-bg);
+    color: var(--text);
+
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.book-price .book-currency-select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.book-price .price-conversion-note {
+    width: 100%;
+    margin: 2px 0 0;
+
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.book-price .price-conversion-note:empty {
+    display: none;
+}
+
+/* 16. Goodreads rating */
+
+.book-rating {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    margin-top: 12px;
+
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rating-star {
+    color: #B58B36;
+    font-size: 17px;
+}
+
+.rating-source {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+
+/* =========================================================
+   17. Personal rating — five antique-gold stars
+   ========================================================= */
+
+.personal-rating-section {
+    min-width: 0;
+    margin-top: 17px;
+    padding: 13px 0 14px;
+
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.personal-rating-label {
+    margin: 0 0 6px;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.personal-rating-form {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+
+    margin: 0;
+    padding: 0;
+}
+
+.personal-rating-stars {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 3px;
+
+    min-height: 36px;
+}
+
+.personal-rating-star {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    width: 31px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+    border-radius: 5px;
+
+    background: transparent;
+    color: var(--star-inactive);
+
+    font-family: Arial, sans-serif;
+    font-size: 25px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+/* Saved stars appear in antique gold. */
+
+.personal-rating-star.is-selected {
+    color: var(--star-active);
+}
+
+/* Give the hovered star a clear interaction cue. */
+
+.personal-rating-star:hover {
+    background: rgba(226, 197, 142, 0.25);
+    color: var(--gold-dark);
+    transform: translateY(-1px);
+}
+
+.personal-rating-star:active {
+    transform: scale(0.94);
+}
+
+.personal-rating-star:focus-visible {
+    outline: 2px solid var(--outline-gold);
+    outline-offset: 1px;
+}
+
+/* Rating value and Clear rating action. */
+
+.personal-rating-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    min-height: 22px;
+    width: 100%;
+}
+
+.personal-rating-value {
+    color: var(--walnut);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.personal-rating-empty {
+    color: var(--muted);
+    font-size: 11px;
+    font-style: italic;
+}
+
+.clear-personal-rating {
+    margin: 0;
+    padding: 2px 0;
+
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #C9B58E;
+    text-underline-offset: 3px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        text-decoration-color 0.2s ease;
+}
+
+.clear-personal-rating:hover {
+    color: var(--favorite);
+    text-decoration-color: var(--favorite);
+}
+
+.clear-personal-rating:focus-visible {
+    outline: 2px solid var(--outline-gold);
+    outline-offset: 3px;
+}
+
+
+/* 18. Description preview */
+
+.description-section {
+    min-width: 0;
+    margin-top: 15px;
+}
+
+.book-description {
+    display: block;
+    min-width: 0;
+    margin: 0;
+
+    color: #6F6252;
+    font-size: 12px;
+    line-height: 1.8;
+
+    overflow-wrap: anywhere;
+}
+
+.book-description.is-collapsed {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+}
+
+.book-description:not(.is-collapsed) {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+}
+
+.description-toggle {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.description-toggle:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.description-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+
+/* 19. Edit and Delete actions */
+
+.book-card-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 18px;
+}
+
+.book-card-actions > .edit-button,
+.book-card-actions > .delete-book-form {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.delete-book-form {
+    display: flex;
+    min-width: 0;
+    margin: 0;
+}
+
+.book-card-actions .edit-button,
+.book-card-actions .delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 8px;
+
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+
+    background: var(--accent);
+    color: #FFFAF0;
+
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.book-card-actions .edit-button:hover,
+.book-card-actions .delete-button:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+}
+
+.book-card-actions .edit-button:active,
+.book-card-actions .delete-button:active {
+    transform: translateY(1px);
+}
+
+.book-card-actions .edit-button span,
+.book-card-actions .delete-button-icon {
+    flex-shrink: 0;
+}
+
+.book-card-actions .delete-button {
+    white-space: nowrap;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 13px;
+}
+
+.delete-button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.edit-button span {
+    font-size: 17px;
+    line-height: 1;
+}
+
+
+/* 20. Empty states */
+
+.empty-state {
+    padding: 55px 20px;
+
+    border: 1px dashed #C9B58E;
+    border-radius: var(--radius-md);
+
+    background: rgba(255, 249, 239, 0.62);
+    text-align: center;
+}
+
+.empty-icon {
+    color: var(--gold);
+    font-size: 32px;
+}
+
+.empty-state h2 {
+    margin: 12px 0 5px;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 25px;
+}
+
+.empty-state p {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+
+/* 21. Add/Edit form layout */
+
+.form-page {
+    min-height: 100vh;
+    padding: 38px 20px 65px;
+}
+
+.form-container {
+    width: min(820px, 100%);
+    margin: 0 auto;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 26px;
+
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.form-header,
+.form-intro {
+    margin-bottom: 30px;
+}
+
+.form-header h1,
+.form-intro h1 {
+    font-size: clamp(32px, 4vw, 43px);
+}
+
+.form-header > p:last-child,
+.form-intro > p:last-child {
+    margin: 10px 0 0;
+    color: var(--muted);
+}
+
+.book-form {
+    padding: 28px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: linear-gradient(
+        155deg,
+        rgba(255, 249, 239, 0.98),
+        rgba(249, 240, 221, 0.97)
+    );
+
+    box-shadow: var(--shadow);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 18px;
+}
+
+.form-field,
+.field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-field label,
+.field label {
+    color: var(--walnut);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea,
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+
+    border: 1px solid #D8C8A9;
+    border-radius: 7px;
+
+    background: rgba(255, 253, 247, 0.96);
+    color: var(--text);
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(82, 107, 82, 0.13);
+}
+
+.form-field textarea,
+.field textarea {
+    min-height: 115px;
+    resize: vertical;
+}
+
+.form-field input[type="file"],
+.field input[type="file"] {
+    padding: 9px;
+    font-size: 12px;
+}
+
+.form-field small,
+.field small,
+.field-help {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.full-width,
+.field-full {
+    grid-column: 1 / -1;
+}
+
+.book-form fieldset {
+    min-width: 0;
+    margin: 0 0 23px;
+    padding: 20px;
+
+    border: 1px solid #DFD0B4;
+    border-radius: 10px;
+
+    background: rgba(243, 233, 216, 0.32);
+}
+
+.book-form legend {
+    padding: 0 9px;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.required {
+    color: #9B4436;
+}
+
+.current-cover {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    min-height: 130px;
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--cover-bg);
+}
+
+.current-cover img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 240px;
+
+    object-fit: contain;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    margin-top: 28px;
+    padding-top: 22px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* 22. Footer */
+
+.site-footer {
+    padding: 24px 20px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   ANTIQUE BRONZE AND VINTAGE ACTION COLOURS
+   ========================================================= */
+
+/* Antique bronze logo background */
+
+.site-header .brand-icon,
+.site-header .brand-mark {
+    background: linear-gradient(
+        145deg,
+        #A78332,
+        #8C691A
+    );
+
+    border-color: #704F13;
+    color: #FFFAF0;
+}
+
+/* Antique bronze Add a Book button */
+
+.site-header .button-primary {
+    background: linear-gradient(
+        145deg,
+        #A78332,
+        #8C691A
+    );
+
+    border-color: #704F13;
+    color: #FFFAF0;
+}
+
+/* Darker bronze on hover */
+
+.site-header .button-primary:hover {
+    background: #704F13;
+    border-color: #5D4210;
+    color: #FFFAF0;
+}
+
+/* NEW badge: soft antique gold */
+
+.new-book-badge {
+    background: #F0D99D;
+    border-color: #C5A45B;
+    color: #5D4210;
+}
+
+/* Edit Book: antique bronze */
+
+.book-card-actions .edit-button {
+    background: linear-gradient(145deg, #A78332, #8C691A);
+    border-color: #704F13;
+    color: #FFFAF0;
+}
+
+.book-card-actions .edit-button:hover {
+    background: #704F13;
+    border-color: #5D4210;
+    color: #FFFAF0;
+}
+
+/* Delete Book: muted burgundy */
+
+.book-card-actions .delete-button {
+    background: #71352D;
+    border-color: #71352D;
+    color: #FFFAF0;
+}
+
+.book-card-actions .delete-button:hover {
+    background: #57271F;
+    border-color: #57271F;
+    color: #FFFAF0;
+}
+
+/* Save Changes and other primary form actions */
+
+.form-actions .button-primary,
+.form-actions button[type="submit"],
+.book-form button[type="submit"],
+.book-form input[type="submit"] {
+    background: linear-gradient(145deg, #A78332, #8C691A);
+    border-color: #704F13;
+    color: #FFFAF0;
+}
+
+.form-actions .button-primary:hover,
+.form-actions button[type="submit"]:hover,
+.book-form button[type="submit"]:hover,
+.book-form input[type="submit"]:hover {
+    background: #704F13;
+    border-color: #5D4210;
+    color: #FFFAF0;
+}
+
+/* Minimalist open-book logo */
+
+.site-header .brand-icon svg {
+    display: block;
+    width: 23px;
+    height: 23px;
+    color: #FFFAF0;
+}
+
+
+/* =========================================================
+   23. Responsive layouts
+   ========================================================= */
+
+@media (max-width: 1000px) {
+    .book-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .page-container,
+    .container {
+        width: 90%;
+    }
+
+    .site-header {
+        padding-right: 5%;
+        padding-left: 5%;
+    }
+}
+
+@media (max-width: 650px) {
+    .site-header {
+        padding: 14px 5%;
+        gap: 10px;
+    }
+
+    .brand {
+        gap: 8px;
+        font-size: 15px;
+    }
+
+    .brand-icon,
+    .brand-mark {
+        width: 32px;
+        height: 32px;
+        font-size: 17px;
+    }
+
+    .brand-mark {
+        font-size: 12px;
+    }
+
+    .site-header > .button-primary,
+    .site-header > .button-secondary {
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    .page-container,
+    .container {
+        width: 90%;
+    }
+
+    .hero {
+        padding: 43px 0 35px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero-description {
+        font-size: 14px;
+    }
+
+    .library-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .search-wrapper {
+        width: 100%;
+    }
+
+    .sort-wrapper {
+        justify-content: space-between;
+    }
+
+    .sort-wrapper select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .book-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .book-cover {
+        height: 280px;
+    }
+
+    .book-details {
+        padding: 19px;
+    }
+
+    .book-card-summary {
+        min-height: 190px;
+    }
+
+    .book-title {
+        font-size: 21px;
+    }
+
+    .favorite-toggle {
+        width: 35px;
+        height: 35px;
+    }
+
+    .personal-rating-star {
+        width: 32px;
+        height: 36px;
+        font-size: 26px;
+    }
+
+    .form-page {
+        padding: 25px 15px 45px;
+    }
+
+    .form-container {
+        width: 100%;
+    }
+
+    .book-form {
+        padding: 20px;
+    }
+
+    .book-form fieldset {
+        padding: 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .full-width,
+    .field-full {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .form-actions .button-primary,
+    .form-actions .button-secondary,
+    .form-actions .button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .brand {
+        font-size: 13px;
+    }
+
+    .site-header > .button-primary,
+    .site-header > .button-secondary {
+        padding: 8px;
+        font-size: 11px;
+    }
+
+    .book-card-actions {
+        gap: 6px;
+    }
+
+    .book-card-actions .edit-button,
+    .book-card-actions .delete-button {
+        gap: 4px;
+        padding-right: 5px;
+        padding-left: 5px;
+        font-size: 12px;
+    }
+
+    .book-form {
+        padding: 14px;
+    }
+
+    .book-form fieldset {
+        padding: 11px;
+    }
+
+    .book-title {
+        font-size: 19px;
+    }
+
+    .favorite-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 23px;
+    }
+
+    .personal-rating-stars {
+        gap: 1px;
+    }
+
+    .personal-rating-star {
+        width: 29px;
+        font-size: 24px;
+    }
+}
+
+
+/* =========================================================
+   24. Respect reduced-motion preferences
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+/* =========================================================
+   READING PROGRESS — RUSTIC VINTAGE DESIGN
+   ========================================================= */
+
+.reading-progress-section {
+    min-width: 0;
+    width: 100%;
+    margin-top: 19px;
+    padding: 17px 0;
+
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.reading-progress-heading {
+    margin: 0 0 12px;
+
+    color: var(--walnut);
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.reading-progress-summary {
+    margin: 0 0 17px;
+}
+
+.reading-progress-summary-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 7px;
+
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.reading-progress-pages {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.reading-progress-percentage {
+    flex-shrink: 0;
+
+    color: var(--walnut);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.reading-progress-track {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+
+    border: 1px solid #DDCBAA;
+    border-radius: 99px;
+
+    background: #E8DAC5;
+}
+
+.reading-progress-fill {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+
+    border-radius: inherit;
+
+    background: linear-gradient(
+        90deg,
+        #8C691A,
+        #B58B4B,
+        #C5A45B
+    );
+
+    transition: width 0.35s ease;
+}
+
+.reading-progress-hint {
+    margin: 0 0 15px;
+
+    color: var(--muted);
+    font-size: 12px;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.reading-progress-form {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 14px;
+
+    margin: 0;
+    padding: 0;
+}
+
+.reading-progress-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 11px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.reading-progress-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.reading-progress-status-field {
+    width: 100%;
+}
+
+.reading-progress-field label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.reading-progress-field input,
+.reading-progress-field select {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    margin: 0;
+    padding: 8px 9px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background: rgba(255, 250, 240, 0.94);
+    color: var(--text);
+
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.reading-progress-field input::placeholder {
+    color: #968773;
+    opacity: 1;
+}
+
+.reading-progress-field input:focus,
+.reading-progress-field select:focus {
+    border-color: var(--gold-dark);
+    outline: 2px solid rgba(147, 106, 24, 0.22);
+    outline-offset: 1px;
+}
+
+.reading-progress-help {
+    margin: -2px 0 0;
+
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.reading-progress-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    gap: 8px;
+
+    width: 100%;
+    min-height: 41px;
+    margin: 1px 0 0;
+    padding: 10px 13px;
+
+    border: 1px solid #704F13;
+    border-radius: 7px;
+
+    background: linear-gradient(
+        145deg,
+        #A78332,
+        #8C691A
+    );
+    color: #FFFAF0;
+
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.reading-progress-save:hover {
+    border-color: #5D4210;
+    background: #704F13;
+    box-shadow: 0 3px 9px rgba(56, 42, 32, 0.14);
+}
+
+.reading-progress-save:active {
+    transform: translateY(1px);
+}
+
+.reading-progress-save:focus-visible {
+    outline: 3px solid rgba(147, 106, 24, 0.4);
+    outline-offset: 3px;
+}
+
+.reading-progress-save span {
+    font-size: 15px;
+    line-height: 1;
+}
+
+
+/* Smaller screens */
+
+@media (max-width: 360px) {
+    .reading-progress-fields-grid {
+        gap: 11px 8px;
+    }
+
+    .reading-progress-field input,
+    .reading-progress-field select {
+        padding: 7px;
+        font-size: 11px;
+    }
+
+    .reading-progress-heading {
+        font-size: 17px;
+    }
+}
+
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+    .reading-progress-fill {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   COLLAPSED BOOK CARD — VISIBLE READING PROGRESS
+   ========================================================= */
+
+.summary-reading-progress {
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 13px;
+    padding: 10px 11px;
+
+    border: 1px solid #D8C4A4;
+    border-radius: 8px;
+
+    background: rgba(240, 230, 212, 0.62);
+}
+
+.summary-reading-progress-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 7px;
+}
+
+.summary-reading-status {
+    min-width: 0;
+
+    color: #526B52;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+.summary-reading-percentage {
+    flex-shrink: 0;
+
+    color: #704F13;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.summary-reading-track {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+
+    border-radius: 99px;
+    background: #E0D0B6;
+}
+
+.summary-reading-fill {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+
+    border-radius: inherit;
+
+    background: linear-gradient(
+        90deg,
+        #8C691A,
+        #B58B4B,
+        #C5A45B
+    );
+
+    transition: width 0.3s ease;
+}
+
+.summary-reading-pages {
+    margin: 6px 0 0;
+
+    color: #75634F;
+    font-size: 10px;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+}
+
+.summary-reading-no-total {
+    margin-top: 0;
+    font-style: italic;
+}
+
+/* Preserve card layout on narrower screens. */
+
+@media (max-width: 650px) {
+    .summary-reading-progress {
+        padding: 10px 12px;
+    }
+
+    .summary-reading-status,
+    .summary-reading-percentage {
+        font-size: 12px;
+    }
+
+    .summary-reading-pages {
+        font-size: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .summary-reading-fill {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   LIBRARY FILTER CONTROLS
+   ========================================================= */
+
+.filter-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+}
+
+.filter-wrapper label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.filter-wrapper select {
+    min-height: 45px;
+    max-width: 100%;
+    padding: 10px 32px 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--card-bg);
+    color: var(--text);
+
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.filter-wrapper select:hover {
+    border-color: var(--gold);
+}
+
+.filter-wrapper select:focus-visible {
+    outline: 3px solid rgba(82, 107, 82, 0.4);
+    outline-offset: 2px;
+}
+
+@media (max-width: 650px) {
+    .filter-wrapper {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .filter-wrapper select {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* AJAX feedback for favorite updates */
+
+#ajax-feedback .flash-message {
+    margin-bottom: 0;
+}
+
+#ajax-feedback.has-error .flash-message {
+    border-color: #D5B1A8;
+    border-left-color: #71352D;
+    background: #F5E7E2;
+    color: #71352D;
+}
+
+.favorite-toggle:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.home-header {
+    justify-content: center;
+    text-align: center;
+}
+
+.home-header .brand {
+    margin: 0 auto;
+}
+
+/* Center the homepage header */
+/* Center the homepage header */
+.home-header {
+    justify-content: center;
+    text-align: center;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+/* The Folio Cellar title */
+.home-header .brand {
+    display: inline-block;
+    margin: 0 auto;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #FFF9EF;
+
+    /* Remove the outline and improve readability */
+    -webkit-text-stroke: 0;
+    text-shadow: 0 2px 4px rgba(56, 42, 32, 0.35);
+
+    text-decoration: none;
+}
+
+/* Decorative gold underline */
+.home-header .brand::after {
+    content: "";
+    display: block;
+    width: 75px;
+    height: 2px;
+    margin: 8px auto 0;
+    background: #E6D2B7;
+    border-radius: 2px;
+}
+
+/* Subtle hover effect */
+.home-header .brand:hover {
+    color: var(--gold);
+    text-shadow: 0 3px 5px rgba(56, 42, 32, 0.45);
+}
+
+
+/* Homepage collection card links: remove arrow underlines */
+.home-card-link,
+.home-card-link:hover,
+.home-card-link:focus,
+.home-card-link:visited {
+    text-decoration: none;
+}
+
+.home-card-link span {
+    text-decoration: none;
+}
+
+/* Side-by-side ratings layout */
+/* Divider lines between description, price and ratings */
+/* Keep the divider below the complete description, including Read more */
+/* Divider below the description and Read more button */
+.description-section {
+    min-width: 0;
+    margin-top: 15px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 3px double var(--border);
+}
+
+/* Keep the description text itself free of divider styling */
+.book-description {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.book-price {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 3px double var(--border);
+}
+
+/* Ratings: personal on the left, Goodreads on the right */
+.ratings-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+    margin-top: 12px;
+}
+
+.ratings-row .personal-rating-section {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.ratings-row .book-rating {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+}
+
+.ratings-row .personal-rating-stars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.ratings-row .personal-rating-star {
+    width: 25px;
+    height: 30px;
+    font-size: 21px;
+}
+
+@media (max-width: 420px) {
+    .ratings-row {
+        column-gap: 8px;
+    }
+
+    .ratings-row .personal-rating-star {
+        width: 21px;
+        font-size: 19px;
+    }
+}
+
+
+/* Collapsible reading progress heading */
+.reading-progress-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.reading-progress-toggle-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.reading-progress-heading[aria-expanded="true"]
+.reading-progress-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.reading-progress-panel[hidden] {
+    display: none !important;
+}
+
+
+/* Match the reading progress toggle to the card's typography */
+.reading-progress-section .reading-progress-heading {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--text-primary, #3F3428);
+
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    padding: 10px 0;
+    margin: 0;
+    text-align: left;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Keep the arrow subtle and consistent with the theme */
+.reading-progress-section .reading-progress-toggle-icon {
+    color: var(--accent, #687653);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Subtle hover feedback */
+.reading-progress-section .reading-progress-heading:hover {
+    color: var(--accent, #687653);
+}
+
+/* Visible keyboard focus */
+.reading-progress-section .reading-progress-heading:focus-visible {
+    outline: 2px solid var(--accent, #687653);
+    outline-offset: 3px;
+}
+
+/* Keep the collapsed panel hidden */
+.reading-progress-section .reading-progress-panel[hidden] {
+    display: none !important;
+}

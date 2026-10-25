@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book | The Folio Cellar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="form-page">
+        <div class="form-container">
+            <a class="back-link" href="{{ url_for('home') }}">← Back to My Library</a>
+
+            <header class="form-header">
+                <p class="eyebrow">YOUR COLLECTION</p>
+                <h1>Edit Book</h1>
+                <p>Update the details of your book below.</p>
+            </header>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages" role="status">
+                        {% for message in messages %}
+                            <p class="flash-message">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form class="book-form"
+                  id="edit-book-form"
+                  action="{{ url_for('edit_book', book_id=book.book_id) }}"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="title">Book Title *</label>
+                        <input id="title" name="title" type="text"
+                               maxlength="255" value="{{ book.title or '' }}" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="authors">Author(s) *</label>
+                        <input id="authors" name="authors" type="text"
+                               maxlength="255" value="{{ book.authors or '' }}" required>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="isbn">ISBN</label>
+                        <input id="isbn" name="isbn" type="text"
+                               maxlength="40" value="{{ book.isbn or '' }}"
+                               placeholder="e.g. 9780141033570">
+                        <small>
+                            Enter ISBN-10 or ISBN-13. If you have both, separate them with a semicolon.
+                        </small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="publisher">Publisher</label>
+                        <input id="publisher" name="publisher" type="text"
+                               maxlength="255" value="{{ book.publisher or '' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="publication_year">Publication Year</label>
+                        <input id="publication_year" name="publication_year"
+                               type="number" min="1901" max="2155"
+                               value="{{ book.publication_year or '' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="language">Language</label>
+                        <input id="language" name="language" type="text"
+                               maxlength="100"
+                               value="{{ book.language or 'English' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="genre">Genre</label>
+                        <select id="genre" name="genre">
+                            {% set genres = [
+                                'Fiction',
+                                'Literary Fiction',
+                                'Comics',
+                                'Fantasy',
+                                'Science Fiction',
+                                'Mystery',
+                                'Thriller',
+                                'Romance',
+                                'Historical Fiction',
+                                'Horror',
+                                'Adventure',
+                                'Young Adult',
+                                "Children's",
+                                'Graphic Novel',
+                                'Poetry',
+                                'Drama',
+                                'Biography',
+                                'Autobiography',
+                                'Memoir',
+                                'History',
+                                'Military History',
+                                'Philosophy',
+                                'Psychology',
+                                'Self-Help',
+                                'Business',
+                                'Finance',
+                                'Technology',
+                                'Science',
+                                'Politics',
+                                'Religion & Spirituality',
+                                'Travel',
+                                'Cooking',
+                                'Education',
+                                'Health & Wellness'
+                            ] %}
+
+                            <option value=""
+                                {% if not book.genre %}selected{% endif %}>
+                                Select a genre
+                            </option>
+
+                            {% if book.genre and book.genre not in genres %}
+                                <option value="{{ book.genre }}" selected>
+                                    {{ book.genre }}
+                                </option>
+                            {% endif %}
+
+                            {% for genre_option in genres %}
+                                <option value="{{ genre_option }}"
+                                    {% if book.genre == genre_option %}selected{% endif %}>
+                                    {{ genre_option }}
+                                </option>
+                            {% endfor %}
+
+                            <option value="Other">Other — enter a custom genre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field full-width"
+                         id="custom-genre-field" hidden>
+                        <label for="custom_genre">Custom genre</label>
+                        <input id="custom_genre" name="custom_genre"
+                               type="text" maxlength="100"
+                               placeholder="Enter your genre">
+                        <small>Enter the genre name you want to save.</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="goodreads_rating">Goodreads Rating (0–5)</label>
+                        <input id="goodreads_rating" name="goodreads_rating"
+                               type="number" min="0" max="5" step="0.01"
+                               value="{{ book.goodreads_rating if book.goodreads_rating is not none else '' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="mrp">Printed Price / MRP</label>
+                        <input id="mrp" name="mrp" type="number"
+                               min="0" step="0.01"
+                               value="{{ book.mrp if book.mrp is not none else '' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency">
+                            {% for code, label in [
+                                ('INR', 'INR — Indian Rupee'),
+                                ('GBP', 'GBP — British Pound'),
+                                ('USD', 'USD — US Dollar'),
+                                ('EUR', 'EUR — Euro'),
+                                ('AUD', 'AUD — Australian Dollar'),
+                                ('CAD', 'CAD — Canadian Dollar')
+                            ] %}
+                                <option value="{{ code }}"
+                                    {% if (book.currency or 'INR') == code %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"
+                                  rows="5">{{ book.description or '' }}</textarea>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label>Current Cover</label>
+                        {% if book.cover_image_path %}
+                            <div class="current-cover">
+                                <img
+                                    src="{{ url_for('static', filename=book.cover_image_path) }}"
+                                    alt="Current cover of {{ book.title }}"
+                                    style="display:block; max-width:180px; max-height:240px; object-fit:contain;">
+                            </div>
+                        {% else %}
+                            <p>No cover uploaded yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="cover_image">Replace Cover (optional)</label>
+                        <input id="cover_image" name="cover_image" type="file"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                        <small>
+                            JPG, PNG or WebP. Maximum upload size: 10 MB.
+                            Leave empty to keep the current cover.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a class="button-secondary" href="{{ url_for('home') }}">Cancel</a>
+                    <button type="submit" class="button-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        (() => {
+            const form = document.getElementById("edit-book-form");
+            const genreSelect = document.getElementById("genre");
+            const customField = document.getElementById("custom-genre-field");
+            const customInput = document.getElementById("custom_genre");
+
+            function updateCustomGenreField() {
+                const isOther = genreSelect.value === "Other";
+
+                customField.hidden = !isOther;
+                customInput.required = isOther;
+
+                if (!isOther) {
+                    customInput.value = "";
+                }
+            }
+
+            genreSelect.addEventListener("change", updateCustomGenreField);
+
+            form.addEventListener("submit", (event) => {
+                if (genreSelect.value !== "Other") {
+                    return;
+                }
+
+                const customGenre = customInput.value.trim();
+
+                if (!customGenre) {
+                    event.preventDefault();
+                    customInput.setCustomValidity("Please enter a custom genre.");
+                    customInput.reportValidity();
+                    customInput.focus();
+                    return;
+                }
+
+                customInput.setCustomValidity("");
+
+                // Submit the actual genre name through the existing field.
+                const customOption = new Option(customGenre, customGenre, true, true);
+                genreSelect.add(customOption);
+                genreSelect.value = customGenre;
+            });
+
+            customInput.addEventListener("input", () => {
+                customInput.setCustomValidity("");
+            });
+
+            updateCustomGenreField();
+        })();
+    </script>
+</body>
+</html>

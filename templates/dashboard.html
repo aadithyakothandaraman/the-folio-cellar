@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Dashboard | The Folio Cellar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .dashboard-page { max-width: 1100px; margin: 0 auto; padding: 40px 6%; }
+        .dashboard-header { margin-bottom: 30px; }
+        .dashboard-header h1 { color: var(--walnut); font-family: var(--serif); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+        .dashboard-stat, .dashboard-panel { padding: 23px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card-bg); box-shadow: var(--shadow); }
+        .dashboard-stat span { display: block; color: var(--muted); font-size: 14px; }
+        .dashboard-stat strong { display: block; margin-top: 10px; color: var(--walnut); font-family: var(--serif); font-size: 2rem; }
+        .dashboard-panel { margin-top: 24px; }
+        .dashboard-panel h2 { color: var(--walnut); font-family: var(--serif); }
+
+        .dashboard-list { padding-left: 20px; line-height: 2; }
+
+        .genre-list {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0 0;
+        }
+
+        .genre-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .genre-item:last-child {
+            border-bottom: none;
+        }
+
+        .genre-name {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .genre-count {
+            flex-shrink: 0;
+            color: var(--muted);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .dashboard-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+        .dashboard-link { color: var(--accent); font-weight: 700; text-decoration: none; }
+        .dashboard-link:hover { text-decoration: underline; }
+
+        @media (max-width: 700px) {
+            .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 440px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <a href="{{ url_for('home') }}" class="brand">The Folio Cellar</a>
+</header>
+
+<main class="dashboard-page">
+    <div class="dashboard-header">
+        <p class="eyebrow">YOUR READING JOURNEY</p>
+        <h1>Reading Dashboard</h1>
+        <p>A little insight into the books you own and the reading you've done.</p>
+    </div>
+
+    {% if error %}
+        <p>We couldn't load your dashboard. Please check your database connection and try again.</p>
+    {% else %}
+        <section class="dashboard-grid" aria-label="Collection statistics">
+            <article class="dashboard-stat"><span>Total books</span><strong>{{ stats.total_books }}</strong></article>
+            <article class="dashboard-stat"><span>Completed</span><strong>{{ stats.completed }}</strong></article>
+            <article class="dashboard-stat"><span>Currently reading</span><strong>{{ stats.currently_reading }}</strong></article>
+            <article class="dashboard-stat"><span>Want to read</span><strong>{{ stats.want_to_read }}</strong></article>
+            <article class="dashboard-stat"><span>On hold</span><strong>{{ stats.on_hold }}</strong></article>
+            <article class="dashboard-stat"><span>Favourites</span><strong>{{ stats.favorites }}</strong></article>
+            <article class="dashboard-stat"><span>Genres represented</span><strong>{{ stats.genres }}</strong></article>
+            <article class="dashboard-stat"><span>Books personally rated</span><strong>{{ stats.rated_books }}</strong></article>
+            <article class="dashboard-stat"><span>Average personal rating</span><strong>{% if stats.average_rating is not none %}{{ stats.average_rating }} / 5{% else %}—{% endif %}</strong></article>
+        </section>
+
+        <section class="dashboard-panel">
+            <h2>Your collection by genre</h2>
+            {% if genre_stats %}
+                <ul class="genre-list">
+                    {% for genre in genre_stats %}
+                        <li class="genre-item">
+                            <span class="genre-name">{{ genre.genre }}</span>
+                            <span class="genre-count">
+                                {{ genre.book_count }} {% if genre.book_count == 1 %}book{% else %}books{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Add genres to your books to see your collection breakdown here.</p>
+            {% endif %}
+        </section>
+
+        <section class="dashboard-panel">
+            <h2>Recently completed</h2>
+            {% if recently_completed %}
+                <ul class="dashboard-list">
+                    {% for book in recently_completed %}
+                        <li><strong>{{ book.title }}</strong> : {{ book.authors }}{% if book.completed_at %} <span>({{ book.completed_at.strftime('%d %b %Y') }})</span>{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Your completed books will appear here once you mark a book as completed.</p>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    <nav class="dashboard-actions" aria-label="Dashboard navigation">
+        <a class="dashboard-link" href="{{ url_for('library') }}">← My Books</a>
+        <a class="dashboard-link" href="{{ url_for('reading_journal') }}">Open Reading Journal →</a>
+    </nav>
+</main>
+
+<footer class="site-footer"><p>Made for the love of books.</p></footer>
+</body>
+</html>

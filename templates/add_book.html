@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Book | The Folio Cellar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{{ url_for('home') }}">
+            <span class="brand-icon" aria-hidden="true">
+    <svg
+        viewBox="0 0 24 24"
+        width="23"
+        height="23"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M12 7.5C9.5 5.8 6.4 5.4 3 6.5v12c3.4-1.1 6.5-.7 9 1z" />
+        <path d="M12 7.5c2.5-1.7 5.6-2.1 9-1v12c-3.4-1.1-6.5-.7-9 1" />
+        <path d="M12 7.5v12" />
+    </svg>
+</span>
+            <span>The Folio Cellar</span>
+        </a>
+        <a class="button button-secondary" href="{{ url_for('home') }}">
+            ← Back to library
+        </a>
+    </header>
+
+    <main class="container form-container">
+        <section class="form-intro">
+            <p></p>
+            <h1>Grow Your Collection.</h1>
+            <p>Record the details from your copy. You can leave optional fields blank.</p>
+        </section>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="notice" role="status">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form class="book-form" method="POST"
+              action="{{ url_for('add_book') }}"
+              enctype="multipart/form-data"
+              id="add-book-form">
+
+            <fieldset>
+                <legend>Basic information</legend>
+
+                <div class="form-grid">
+                    <div class="field field-full">
+                        <label for="title">Book title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title"
+                               maxlength="255" required autofocus>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="authors">Author(s) <span class="required">*</span></label>
+                        <input type="text" id="authors" name="authors"
+                               maxlength="255" required>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="isbn">ISBN</label>
+                        <input type="text" id="isbn" name="isbn"
+                               maxlength="40"
+                               placeholder="e.g. 9780141033570">
+                        <p class="field-help">
+                            Enter ISBN-10 or ISBN-13. If you have both, separate them with a semicolon.
+                        </p>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Publication details</legend>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="publisher">Publisher</label>
+                        <input type="text" id="publisher" name="publisher"
+                               maxlength="255">
+                    </div>
+
+                    <div class="field">
+                        <label for="publication_year">Publication year</label>
+                        <input type="number" id="publication_year"
+                               name="publication_year" min="1901" max="2155">
+                    </div>
+
+                    <div class="field">
+                        <label for="language">Language</label>
+                        <input type="text" id="language" name="language"
+                               maxlength="100" value="English">
+                    </div>
+
+                    <div class="field">
+                        <label for="genre">Genre</label>
+                        <select id="genre" name="genre">
+                            <option value="">Select a genre</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Comics">Comics</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Science Fiction">Science Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Historical Fiction">Historical Fiction</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Young Adult">Young Adult</option>
+                            <option value="Children's">Children's</option>
+                            <option value="Graphic Novel">Graphic Novel</option>
+                            <option value="Poetry">Poetry</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Biography">Biography</option>
+                            <option value="Autobiography">Autobiography</option>
+                            <option value="Memoir">Memoir</option>
+                            <option value="History">History</option>
+                            <option value="Military History">Military History</option>
+                            <option value="Philosophy">Philosophy</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Business">Business</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Science">Science</option>
+                            <option value="Politics">Politics</option>
+                            <option value="Religion & Spirituality">Religion &amp; Spirituality</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Cooking">Cooking</option>
+                            <option value="Education">Education</option>
+                            <option value="Health & Wellness">Health &amp; Wellness</option>
+                            <option value="Other">Other — enter a custom genre</option>
+                        </select>
+                    </div>
+
+                    <div class="field field-full" id="custom-genre-field" hidden>
+                        <label for="custom_genre">Custom genre</label>
+                        <input type="text" id="custom_genre"
+                               name="custom_genre" maxlength="100"
+                               placeholder="Enter your genre">
+                        <p class="field-help">
+                            Enter the genre name you want to save.
+                        </p>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"
+                                  rows="4"
+                                  placeholder="A short description, if you want one…"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Cover image</legend>
+
+                <div class="field">
+                    <label for="cover_image">Choose a cover from your computer</label>
+                    <input type="file" id="cover_image" name="cover_image"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                    <p class="field-help">
+                        Optional. JPG, PNG or WebP ; Maximum 10 MB.
+                    </p>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Printed price and rating</legend>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="mrp">Printed MRP</label>
+                        <input type="number" id="mrp" name="mrp"
+                               min="0" step="0.01" placeholder="e.g. 499.00">
+                    </div>
+
+                    <div class="field">
+                        <label for="currency">MRP currency</label>
+                        <select id="currency" name="currency">
+                            <option value="INR" selected>INR — Indian Rupee</option>
+                            <option value="GBP">GBP — British Pound</option>
+                            <option value="USD">USD — US Dollar</option>
+                            <option value="EUR">EUR — Euro</option>
+                            <option value="AUD">AUD — Australian Dollar</option>
+                            <option value="CAD">CAD — Canadian Dollar</option>
+                        </select>
+                    </div>
+
+                    <div class="field field-full">
+                        <label for="goodreads_rating">Goodreads rating (out of 5)</label>
+                        <input type="number" id="goodreads_rating"
+                               name="goodreads_rating"
+                               min="0" max="5" step="0.01"
+                               placeholder="e.g. 4.25">
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <a class="button button-secondary" href="{{ url_for('home') }}">
+                    Cancel
+                </a>
+                <button class="button button-primary" type="submit">
+                    Save book
+                </button>
+            </div>
+        </form>
+
+        <footer class="site-footer">
+            <p>Fields marked * are required.</p>
+        </footer>
+    </main>
+
+    <script>
+        (() => {
+            const form = document.getElementById("add-book-form");
+            const genreSelect = document.getElementById("genre");
+            const customField = document.getElementById("custom-genre-field");
+            const customInput = document.getElementById("custom_genre");
+
+            function updateCustomGenreField() {
+                const isOther = genreSelect.value === "Other";
+
+                customField.hidden = !isOther;
+                customInput.required = isOther;
+
+                if (!isOther) {
+                    customInput.value = "";
+                }
+            }
+
+            genreSelect.addEventListener("change", updateCustomGenreField);
+
+            form.addEventListener("submit", (event) => {
+                if (genreSelect.value !== "Other") {
+                    return;
+                }
+
+                const customGenre = customInput.value.trim();
+
+                if (!customGenre) {
+                    event.preventDefault();
+                    customInput.setCustomValidity("Please enter a custom genre.");
+                    customInput.reportValidity();
+                    customInput.focus();
+                    return;
+                }
+
+                customInput.setCustomValidity("");
+
+                // Submit the actual custom genre through the existing
+                // "genre" field, so no database or Python changes are needed.
+                const customOption = new Option(customGenre, customGenre, true, true);
+                genreSelect.add(customOption);
+                genreSelect.value = customGenre;
+            });
+
+            customInput.addEventListener("input", () => {
+                customInput.setCustomValidity("");
+            });
+        })();
+    </script>
+</body>
+</html>

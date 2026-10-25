@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} Journal Entry | The Folio Cellar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .journal-form-page { max-width: 760px; margin: 0 auto; padding: 40px 6%; }
+        .journal-form-card { padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card-bg); box-shadow: var(--shadow); }
+        .journal-form-card h1 { color: var(--walnut); font-family: var(--serif); }
+        .journal-field { margin-bottom: 20px; }
+        .journal-field label { display: block; margin-bottom: 8px; font-weight: 700; }
+        .journal-field input, .journal-field select, .journal-field textarea { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); color: var(--text); font: inherit; }
+        .journal-field textarea { min-height: 180px; resize: vertical; }
+        .journal-form-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+        .journal-back { display: inline-block; margin-top: 22px; color: var(--accent); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <a href="{{ url_for('home') }}" class="brand">The Folio Cellar</a>
+</header>
+
+<main class="journal-form-page">
+    <div class="journal-form-card">
+        <p class="eyebrow">THOUGHTS WORTH KEEPING</p>
+        <h1>{{ action }} Journal Entry</h1>
+
+        <form method="POST">
+            <div class="journal-field">
+                <label for="entry_type">Entry type</label>
+                <select id="entry_type" name="entry_type" required>
+                    {% for kind in ['Reflection', 'Memorable Quote', 'Lesson Learned'] %}
+                        <option value="{{ kind }}" {% if entry and entry.entry_type == kind %}selected{% elif not entry and kind == 'Reflection' %}selected{% endif %}>{{ kind }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="journal-field">
+                <label for="title">Title</label>
+                <input id="title" name="title" maxlength="255" required value="{{ entry.title if entry else '' }}" placeholder="Give this entry a title">
+            </div>
+
+            <div class="journal-field">
+                <label for="book_id">Related book (optional)</label>
+                <select id="book_id" name="book_id">
+                    <option value="">No specific book</option>
+                    {% for book in books %}
+                        <option value="{{ book.book_id }}" {% if entry and entry.book_id == book.book_id %}selected{% endif %}>{{ book.title }} — {{ book.authors }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="journal-field" id="quote-author-field">
+                <label for="quote_author">Quote author (optional)</label>
+                <input id="quote_author" name="quote_author" maxlength="255" value="{{ entry.quote_author if entry and entry.quote_author else '' }}" placeholder="Who said or wrote the quote?">
+            </div>
+
+            <div class="journal-field">
+                <label for="content">Your entry</label>
+                <textarea id="content" name="content" required placeholder="Write your quote, reflection, or lesson here...">{{ entry.content if entry else '' }}</textarea>
+            </div>
+
+            <div class="journal-form-actions">
+                <button class="button-primary" type="submit">{{ action }} Entry</button>
+                <a class="button-secondary" href="{{ url_for('reading_journal') }}">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <a class="journal-back" href="{{ url_for('reading_journal') }}">← Back to Journal</a>
+</main>
+
+<footer class="site-footer"><p>Made for the love of books.</p></footer>
+
+<script>
+    const entryType = document.getElementById("entry_type");
+    const quoteAuthorField = document.getElementById("quote-author-field");
+
+    function updateQuoteAuthorField() {
+        quoteAuthorField.hidden = entryType.value !== "Memorable Quote";
+    }
+
+    entryType.addEventListener("change", updateQuoteAuthorField);
+    updateQuoteAuthorField();
+</script>
+</body>
+</html>

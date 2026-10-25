@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Journal | The Folio Cellar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .journal-page { max-width: 1000px; margin: 0 auto; padding: 40px 6%; }
+        .journal-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 28px; }
+        .journal-header h1 { color: var(--walnut); font-family: var(--serif); }
+        .journal-entry { margin-bottom: 18px; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card-bg); box-shadow: var(--shadow); }
+        .journal-entry h2 { color: var(--walnut); font-family: var(--serif); }
+        .journal-meta { color: var(--muted); font-size: 13px; }
+        .journal-content { line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .journal-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+        .journal-link { color: var(--accent); font-weight: 700; text-decoration: none; }
+        .journal-link:hover { text-decoration: underline; }
+        .journal-empty { padding: 35px; border: 1px dashed var(--border); border-radius: var(--radius-md); text-align: center; }
+        .journal-entry button { cursor: pointer; }
+        .journal-actions form { margin: 0; }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <a href="{{ url_for('home') }}" class="brand">The Folio Cellar</a>
+</header>
+
+<main class="journal-page">
+    <div class="journal-header">
+        <div>
+            <p class="eyebrow">THOUGHTS WORTH KEEPING</p>
+            <h1>My Reading Journal</h1>
+            <p>Save quotes, reflections, and lessons from your reading.</p>
+        </div>
+        <a class="button-primary" href="{{ url_for('add_journal_entry') }}">＋ New Entry</a>
+    </div>
+
+    {% if error %}
+        <div class="journal-empty">
+            <h2>We couldn't load your journal.</h2>
+            <p>Please check your database connection and try again.</p>
+        </div>
+    {% elif entries %}
+        {% for entry in entries %}
+            <article class="journal-entry">
+                <p class="journal-meta">
+                    {{ entry.entry_type }}
+                    {% if entry.book_title %} · {{ entry.book_title }}{% endif %}
+                    · {{ entry.created_at.strftime('%d %b %Y') }}
+                </p>
+
+                <h2>{{ entry.title }}</h2>
+
+                {% if entry.entry_type == 'Memorable Quote' and entry.quote_author %}
+                    <p class="journal-meta">By {{ entry.quote_author }}</p>
+                {% endif %}
+
+                <div class="journal-content">{{ entry.content }}</div>
+
+                <div class="journal-actions">
+                    <a
+                        class="button-secondary"
+                        href="{{ url_for('edit_journal_entry', entry_id=entry.entry_id) }}"
+                    >
+                        Edit
+                    </a>
+
+                    <form
+                        action="{{ url_for('delete_journal_entry', entry_id=entry.entry_id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Delete this journal entry? This cannot be undone.');"
+                    >
+                        <button type="submit" class="button-secondary">Delete</button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="journal-empty">
+            <h2>Your journal starts here.</h2>
+            <p>Save a quote, capture an idea, or write your first reflection.</p>
+            <a class="button-primary" href="{{ url_for('add_journal_entry') }}">Create Your First Entry</a>
+        </div>
+    {% endif %}
+
+    <p><a class="journal-link" href="{{ url_for('home') }}">← Back to Home</a></p>
+</main>
+
+<footer class="site-footer"><p>Made for the love of books.</p></footer>
+</body>
+</html>
